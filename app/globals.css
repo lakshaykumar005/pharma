@@ -73,18 +73,7 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* page-wide grid texture + soft red glow (light theme) */
-  background-image:
-    radial-gradient(900px 520px at 88% -4%, rgba(236, 28, 43, 0.09), transparent 60%),
-    radial-gradient(700px 480px at -6% 4%, rgba(236, 28, 43, 0.05), transparent 55%),
-    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-  background-size:
-    100% 700px,
-    100% 700px,
-    46px 46px,
-    46px 46px;
-  background-repeat: no-repeat, no-repeat, repeat, repeat;
+  /* plain canvas — grid lives only in the hero (.bg-grid) */
 }
 
 ::selection {
@@ -261,12 +250,14 @@ body {
   animation: gradient-pan 6s ease infinite;
 }
 
-/* dotted / grid hero pattern helpers */
-.bg-dot {
-  background-image: radial-gradient(rgba(0, 0, 0, 0.07) 1px, transparent 1px);
-  background-size: 22px 22px;
-  -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 30%, #000 40%, transparent 75%);
-  mask-image: radial-gradient(ellipse 60% 60% at 50% 30%, #000 40%, transparent 75%);
+/* dark grid — hero only */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.11) 1px, transparent 1px);
+  background-size: 46px 46px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 62% at 50% 30%, #000 38%, transparent 80%);
+  mask-image: radial-gradient(ellipse 70% 62% at 50% 30%, #000 38%, transparent 80%);
 }
 
 /* shimmer button */
