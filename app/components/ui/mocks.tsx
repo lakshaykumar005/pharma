@@ -46,41 +46,67 @@ export function ChecklistMock({ light = false }: { light?: boolean }) {
 }
 
 export function GanttMock() {
-  const bars = [
-    { left: 4, width: 18, tone: "done" },
-    { left: 4, width: 14, tone: "done" },
-    { left: 30, width: 22, tone: "live" },
-    { left: 48, width: 26, tone: "up" },
-    { left: 70, width: 20, tone: "up" },
+  const rows: { left: number; width: number; tone: "done" | "live" | "up"; milestone?: boolean }[] = [
+    { left: 4, width: 22, tone: "done" },
+    { left: 4, width: 16, tone: "done" },
+    { left: 28, width: 24, tone: "live" },
+    { left: 50, width: 26, tone: "up" },
+    { left: 72, width: 18, tone: "up", milestone: true },
   ];
-  const fill = (t: string) =>
-    t === "done"
-      ? "linear-gradient(90deg,#202024,#3b3b42)"
-      : t === "live"
-        ? "linear-gradient(90deg,var(--color-brand-bright),var(--color-brand-deep))"
-        : "transparent";
+  const today = 46;
+
   return (
-    <div className="rounded-xl border border-black/10 bg-canvas/60 p-3.5">
-      <div className="flex items-center justify-between text-[0.58rem] font-mono uppercase tracking-widest text-faint">
-        <span>Programme timeline</span>
-        <span className="text-brand-bright">Today</span>
+    <div className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+      {/* header */}
+      <div className="flex items-center justify-between border-b border-black/[0.07] px-4 py-2.5">
+        <span className="font-mono text-[0.56rem] uppercase tracking-[0.18em] text-faint">Programme timeline</span>
+        <span className="inline-flex items-center gap-1.5 font-mono text-[0.56rem] uppercase tracking-[0.18em] text-brand">
+          <span className="h-1.5 w-1.5 rounded-full bg-brand animate-[blink_1.6s_ease-in-out_infinite]" />
+          Today
+        </span>
       </div>
-      <div className="relative mt-3 space-y-2">
-        <span className="absolute bottom-0 top-0 z-0 w-px bg-brand-bright/60" style={{ left: "44%" }} />
-        {bars.map((b, i) => (
-          <div key={i} className="relative h-3.5">
-            <span
-              className="absolute top-0 h-full rounded-[4px] border"
-              style={{
-                left: `${b.left}%`,
-                width: `${b.width}%`,
-                background: fill(b.tone),
-                borderColor: b.tone === "up" ? "rgba(0,0,0,0.18)" : b.tone === "live" ? "rgba(236,28,43,0.5)" : "rgba(0,0,0,0.25)",
-              }}
-            />
-          </div>
+
+      {/* chart */}
+      <div className="relative px-4 py-3.5">
+        {/* faint month gridlines */}
+        {[25, 50, 75].map((x) => (
+          <span key={x} className="absolute inset-y-2 z-0 w-px bg-black/[0.05]" style={{ left: `${x}%` }} />
         ))}
-        <span className="absolute h-3 w-3 rotate-45 rounded-[2px] bg-brand" style={{ left: "92%", top: "62%" }} />
+
+        {/* today marker */}
+        <span className="absolute inset-y-1 z-20 w-px bg-brand/80" style={{ left: `${today}%` }}>
+          <span className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-brand shadow-[0_0_0_3px_rgba(236,28,43,0.18)]" />
+        </span>
+
+        <div className="relative z-10 space-y-2">
+          {rows.map((r, i) => (
+            <div key={i} className="relative h-5 rounded-md bg-black/[0.025]">
+              {/* bar */}
+              <span
+                className={`absolute top-1/2 h-3 -translate-y-1/2 overflow-hidden rounded-[5px] ${
+                  r.tone === "done"
+                    ? "bg-gradient-to-b from-zinc-700 to-zinc-900 shadow-sm"
+                    : r.tone === "live"
+                      ? "bg-gradient-to-r from-brand-bright to-brand-deep shadow-[0_4px_12px_-3px_rgba(236,28,43,0.55)]"
+                      : "border border-dashed border-black/20 bg-black/[0.03]"
+                }`}
+                style={{ left: `${r.left}%`, width: `${r.width}%` }}
+              >
+                {(r.tone === "done" || r.tone === "live") && (
+                  <span className="absolute inset-x-0 top-0 h-1/2 bg-white/15" />
+                )}
+              </span>
+
+              {/* milestone diamond at the end of its lane */}
+              {r.milestone && (
+                <span
+                  className="absolute top-1/2 z-20 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-[3px] bg-brand ring-2 ring-white shadow-[0_0_0_3px_rgba(236,28,43,0.15)]"
+                  style={{ left: `${r.left + r.width + 4}%` }}
+                />
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
