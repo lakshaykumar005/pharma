@@ -24,7 +24,6 @@ export default async function Landing() {
       <section className="relative">
         <div className="aurora" />
         <Meteors count={12} />
-        <div className="pointer-events-none absolute inset-0 bg-grid" />
 
         <div className="relative mx-auto max-w-[1240px] px-4 pb-10 pt-20 sm:px-6 sm:pt-28">
           <Reveal>
