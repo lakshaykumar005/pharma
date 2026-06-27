@@ -248,11 +248,11 @@ export default async function Landing() {
       </section>
 
       {/* ============================ MARQUEE ============================ */}
-      <section className="relative border-y border-black/8 bg-black/[0.015] py-6">
+      <section className="relative border-y border-white/10 bg-[#0d0d10] py-6">
         <Marquee duration={32}>
           {["Procurement", "Delivery", "Installation", "Commissioning", "SCADA", "Membrane skid", "Sensors", "Demo-trial", "Milestones", "Dependencies", "Real-time", "Transparency"].map((w) => (
-            <span key={w} className="mx-6 inline-flex items-center gap-3 font-display text-2xl uppercase tracking-wide text-black/15">
-              {w}<span className="h-1.5 w-1.5 rounded-full bg-brand/60" />
+            <span key={w} className="mx-6 inline-flex items-center gap-3 font-display text-2xl uppercase tracking-wide text-white/30">
+              {w}<span className="h-1.5 w-1.5 rounded-full bg-brand" />
             </span>
           ))}
         </Marquee>
