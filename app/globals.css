@@ -68,13 +68,23 @@ html {
 }
 
 body {
-  /* plain canvas — section backgrounds are per-section; only the hero carries
-     the grid + glow texture */
   background-color: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* page-wide grid texture + soft red glow (light theme) */
+  background-image:
+    radial-gradient(900px 520px at 88% -4%, rgba(236, 28, 43, 0.09), transparent 60%),
+    radial-gradient(700px 480px at -6% 4%, rgba(236, 28, 43, 0.05), transparent 55%),
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size:
+    100% 700px,
+    100% 700px,
+    46px 46px,
+    46px 46px;
+  background-repeat: no-repeat, no-repeat, repeat, repeat;
 }
 
 ::selection {
