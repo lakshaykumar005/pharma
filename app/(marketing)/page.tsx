@@ -375,27 +375,8 @@ function HeroPreview({
         </div>
       </div>
 
-      {/* floating white card */}
-      <div className="absolute -bottom-6 left-3 hidden rounded-xl bg-paper p-3 text-paper-ink shadow-2xl sm:flex sm:items-center sm:gap-3">
-        <Ring26 />
-        <div>
-          <p className="font-mono text-[0.5rem] uppercase tracking-widest text-zinc-500">Overall progress</p>
-          <p className="display-num text-xl leading-none">26%</p>
-        </div>
-      </div>
       <span className="sr-only">{`${project.end} ${taskCount} ${teamCount} ${deptCount}`}</span>
     </div>
-  );
-}
-
-function Ring26() {
-  const r = 16;
-  const c = 2 * Math.PI * r;
-  return (
-    <svg width="40" height="40" className="-rotate-90">
-      <circle cx="20" cy="20" r={r} fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="5" />
-      <circle cx="20" cy="20" r={r} fill="none" stroke="var(--color-brand)" strokeWidth="5" strokeLinecap="round" strokeDasharray={`${0.26 * c} ${c}`} />
-    </svg>
   );
 }
 
