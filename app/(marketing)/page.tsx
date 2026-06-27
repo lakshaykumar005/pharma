@@ -8,7 +8,6 @@ import { TiltCard } from "@/app/components/ui/TiltCard";
 import { Marquee } from "@/app/components/ui/Marquee";
 import { NumberTicker } from "@/app/components/ui/NumberTicker";
 import { Meteors } from "@/app/components/ui/Meteors";
-import { BorderBeam } from "@/app/components/ui/BorderBeam";
 import { ChecklistMock, GanttMock, ProgressMock, RolePills, AvatarStack } from "@/app/components/ui/mocks";
 
 export const dynamic = "force-dynamic";
@@ -70,16 +69,16 @@ export default async function Landing() {
         </div>
       </section>
 
-      {/* ============================ HOW — LIGHT SECTION ============================ */}
-      <section id="how" className="scroll-mt-24 border-y border-black/5 bg-[#f4f4f2] text-zinc-900">
+      {/* ============================ HOW — DARK BAND ============================ */}
+      <section id="how" className="scroll-mt-24 border-y border-white/5 bg-[#0b0b0d] text-zinc-100">
         <div className="mx-auto max-w-[1240px] px-4 py-20 sm:px-6">
           <Reveal>
             <div className="mx-auto max-w-2xl text-center">
-              <span className="font-mono text-[0.66rem] uppercase tracking-[0.22em] text-brand">How it works</span>
-              <h2 className="mt-3 font-display text-[clamp(2rem,5vw,3.25rem)] uppercase leading-[0.95] tracking-tight text-zinc-900">
+              <span className="font-mono text-[0.66rem] uppercase tracking-[0.22em] text-brand-bright">How it works</span>
+              <h2 className="mt-3 font-display text-[clamp(2rem,5vw,3.25rem)] uppercase leading-[0.95] tracking-tight text-zinc-50">
                 Past, present and future — on one screen
               </h2>
-              <p className="mt-3 text-sm leading-relaxed text-zinc-500 sm:text-base">
+              <p className="mt-3 text-sm leading-relaxed text-zinc-400 sm:text-base">
                 Every task lives in one of three states. You always know exactly where the programme stands.
               </p>
             </div>
@@ -92,13 +91,13 @@ export default async function Landing() {
               { tag: "Next", title: "What's coming up", body: "Upcoming tasks and dependencies are mapped on the timeline — no surprises.", icon: IconArrow, accent: false },
             ].map((c, i) => (
               <Reveal key={c.tag} delay={i * 90}>
-                <div className={`relative h-full overflow-hidden rounded-[var(--radius-card)] border p-7 ${c.accent ? "border-brand/30 bg-white shadow-[0_20px_50px_-30px_rgba(236,28,43,0.5)]" : "border-black/8 bg-white shadow-sm"}`}>
-                  <span className={`inline-flex h-11 w-11 items-center justify-center rounded-xl ${c.accent ? "bg-brand text-white" : "bg-zinc-900 text-white"}`}>
+                <div className={`group relative h-full overflow-hidden rounded-[var(--radius-card)] border p-7 transition-colors duration-300 ${c.accent ? "border-brand/50 bg-[#16161b]" : "border-white/10 bg-[#15151a] hover:border-white/20"}`}>
+                  <span className={`inline-flex h-11 w-11 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110 ${c.accent ? "bg-brand text-white shadow-[0_8px_24px_-8px_rgba(236,28,43,0.8)]" : "bg-white/10 text-white"}`}>
                     <c.icon />
                   </span>
-                  <p className={`mt-5 font-mono text-[0.62rem] uppercase tracking-[0.2em] ${c.accent ? "text-brand" : "text-zinc-400"}`}>{c.tag}</p>
-                  <h3 className="mt-2 text-xl font-semibold tracking-tight text-zinc-900">{c.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-zinc-500">{c.body}</p>
+                  <p className={`mt-5 font-mono text-[0.62rem] uppercase tracking-[0.2em] ${c.accent ? "text-brand-bright" : "text-zinc-400"}`}>{c.tag}</p>
+                  <h3 className="mt-2 text-xl font-semibold tracking-tight text-zinc-50">{c.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-zinc-400">{c.body}</p>
                 </div>
               </Reveal>
             ))}
@@ -112,14 +111,14 @@ export default async function Landing() {
           <Reveal>
             <div className="relative">
               <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[28px] bg-brand/15 blur-3xl" />
-              <div className="overflow-hidden rounded-[20px] border border-white/12 shadow-2xl">
+              <div className="overflow-hidden rounded-[20px] border border-black/12 shadow-2xl">
                 <div className="relative aspect-[5/4]">
                   <Image src="/images/lab.jpg" alt="Anthem Biosciences laboratory" fill sizes="(max-width:1024px) 100vw, 50vw" className="object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-canvas/70 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
                 </div>
               </div>
               {/* floating image chip */}
-              <div className="absolute -bottom-5 -right-4 hidden rounded-xl border border-white/10 bg-paper p-3 text-paper-ink shadow-xl sm:block">
+              <div className="absolute -bottom-5 -right-4 hidden rounded-xl border border-black/10 bg-paper p-3 text-paper-ink shadow-xl sm:block">
                 <p className="font-mono text-[0.55rem] uppercase tracking-widest text-zinc-500">On track</p>
                 <p className="display-num mt-1 text-2xl">3 lines</p>
               </div>
@@ -158,7 +157,7 @@ export default async function Landing() {
               <div className="flex flex-wrap items-start justify-between gap-6">
                 <div className="max-w-xs">
                   <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand text-white"><IconLayers /></span>
-                  <h3 className="mt-5 text-2xl font-semibold tracking-tight text-zinc-900">Subtasks & checklists</h3>
+                  <h3 className="mt-5 text-2xl font-semibold tracking-tight text-zinc-100">Subtasks & checklists</h3>
                   <p className="mt-2 text-sm leading-relaxed text-zinc-500">
                     Break any task into a checklist. Tick items off and the task — and its whole workstream —
                     recalculates progress automatically. True bottom-up tracking.
@@ -217,13 +216,13 @@ export default async function Landing() {
 
           {/* image banner */}
           <Reveal delay={120} className="lg:col-span-12">
-            <div className="group relative h-64 overflow-hidden rounded-[var(--radius-card)] border border-white/10 sm:h-72">
+            <div className="group relative h-64 overflow-hidden rounded-[var(--radius-card)] border border-black/10 sm:h-72">
               <Image src="/images/pipes.jpg" alt="On-site installation" fill sizes="100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-r from-canvas via-canvas/70 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/75 to-black/20" />
               <div className="relative flex h-full max-w-xl flex-col justify-center p-8 sm:p-12">
                 <span className="mono-label text-brand-bright">Procurement → commissioning</span>
-                <h3 className="mt-3 font-display text-3xl uppercase tracking-tight text-ink sm:text-4xl">Tracked at every step on the ground</h3>
-                <p className="mt-3 text-sm leading-relaxed text-mute">Every delivery, install and trial logged against the plan — with milestones that mean something.</p>
+                <h3 className="mt-3 font-display text-3xl uppercase tracking-tight text-white sm:text-4xl">Tracked at every step on the ground</h3>
+                <p className="mt-3 text-sm leading-relaxed text-white/70">Every delivery, install and trial logged against the plan — with milestones that mean something.</p>
               </div>
             </div>
           </Reveal>
@@ -249,10 +248,10 @@ export default async function Landing() {
       </section>
 
       {/* ============================ MARQUEE ============================ */}
-      <section className="relative border-y border-white/8 bg-white/[0.015] py-6">
+      <section className="relative border-y border-black/8 bg-black/[0.015] py-6">
         <Marquee duration={32}>
           {["Procurement", "Delivery", "Installation", "Commissioning", "SCADA", "Membrane skid", "Sensors", "Demo-trial", "Milestones", "Dependencies", "Real-time", "Transparency"].map((w) => (
-            <span key={w} className="mx-6 inline-flex items-center gap-3 font-display text-2xl uppercase tracking-wide text-white/15">
+            <span key={w} className="mx-6 inline-flex items-center gap-3 font-display text-2xl uppercase tracking-wide text-black/15">
               {w}<span className="h-1.5 w-1.5 rounded-full bg-brand/60" />
             </span>
           ))}
@@ -264,12 +263,12 @@ export default async function Landing() {
         <SectionHead kicker="For your team" title="One tool, every perspective" desc="From the client's boardroom view to the engineer's task checklist — everyone gets what they need." />
 
         <Reveal>
-          <div className="group relative mt-12 h-44 overflow-hidden rounded-[var(--radius-card)] border border-white/10 sm:h-52">
+          <div className="group relative mt-12 h-44 overflow-hidden rounded-[var(--radius-card)] border border-black/10 sm:h-52">
             <Image src="/images/water.jpg" alt="Engineering design & planning" fill sizes="100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-black/15" />
             <div className="absolute bottom-0 p-6 sm:p-8">
               <span className="mono-label text-brand-bright">Design · Project · Service · Simulation · A&amp;P</span>
-              <p className="mt-2 max-w-lg font-display text-2xl uppercase tracking-tight text-ink sm:text-3xl">Engineered transparency for every discipline</p>
+              <p className="mt-2 max-w-lg font-display text-2xl uppercase tracking-tight text-white sm:text-3xl">Engineered transparency for every discipline</p>
             </div>
           </div>
         </Reveal>
@@ -304,11 +303,11 @@ export default async function Landing() {
       {/* ============================ CTA — white ============================ */}
       <section className="mx-auto max-w-[1240px] px-4 pb-24 sm:px-6">
         <Reveal>
-          <div className="relative grid items-center gap-8 overflow-hidden rounded-[24px] bg-paper p-8 text-paper-ink shadow-[0_40px_120px_-50px_rgba(236,28,43,0.7)] sm:p-12 lg:grid-cols-[1.4fr_1fr]">
-            <BorderBeam duration={9} size={130} />
-            <div>
+          <div className="relative grid items-center gap-8 overflow-hidden rounded-[24px] bg-paper p-8 text-paper-ink shadow-[0_40px_120px_-50px_rgba(236,28,43,0.45)] sm:p-12 lg:grid-cols-[1.4fr_1fr]">
+            <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand/20 blur-[70px]" />
+            <div className="relative">
               <span className="font-mono text-[0.66rem] uppercase tracking-[0.22em] text-brand">Get started</span>
-              <h2 className="mt-3 font-display text-[clamp(2rem,5vw,3.5rem)] uppercase leading-[0.9] tracking-tight text-zinc-900">
+              <h2 className="mt-3 font-display text-[clamp(2rem,5vw,3.5rem)] uppercase leading-[0.9] tracking-tight text-zinc-100">
                 Full visibility starts here
               </h2>
               <p className="mt-4 max-w-md text-sm text-zinc-500 sm:text-base">
@@ -321,8 +320,8 @@ export default async function Landing() {
               </div>
             </div>
             <div className="hidden justify-self-end lg:block">
-              <div className="w-[260px] rounded-2xl border border-black/10 bg-white p-1.5 shadow-xl">
-                <div className="rounded-xl bg-zinc-50 p-4">
+              <div className="w-[260px] rounded-2xl border border-white/10 bg-paper p-1.5 shadow-xl">
+                <div className="rounded-xl bg-zinc-950 p-4">
                   <ChecklistMock light />
                 </div>
               </div>
@@ -351,13 +350,13 @@ function HeroPreview({
   return (
     <div className="relative mx-auto mt-16 max-w-4xl">
       <div className="pointer-events-none absolute -inset-x-10 -top-12 -z-10 h-48 rounded-full bg-brand/20 blur-[80px]" />
-      <div className="rounded-2xl border border-white/12 bg-gradient-to-b from-panel to-canvas-2 p-2.5 shadow-[0_50px_140px_-50px_rgba(236,28,43,0.55)]">
+      <div className="rounded-2xl border border-black/12 bg-gradient-to-b from-panel to-canvas-2 p-2.5 shadow-[0_50px_140px_-50px_rgba(236,28,43,0.55)]">
         {/* browser chrome */}
         <div className="flex items-center gap-2 px-3 py-2">
           <span className="h-2.5 w-2.5 rounded-full bg-brand/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-white/25" />
-          <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-          <span className="ml-3 hidden rounded-md bg-white/[0.05] px-3 py-1 font-mono text-[0.6rem] text-faint sm:block">
+          <span className="h-2.5 w-2.5 rounded-full bg-black/25" />
+          <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
+          <span className="ml-3 hidden rounded-md bg-black/[0.05] px-3 py-1 font-mono text-[0.6rem] text-faint sm:block">
             anthem-command-center / dashboard
           </span>
           <span className="ml-auto chip border-brand/40 text-brand-bright">
@@ -365,7 +364,7 @@ function HeroPreview({
           </span>
         </div>
         {/* mini dashboard */}
-        <div className="rounded-xl border border-white/8 bg-canvas/70 p-3 sm:p-4">
+        <div className="rounded-xl border border-black/8 bg-canvas/70 p-3 sm:p-4">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <MiniStat label="Days to go" value="39" />
             <MiniStat label="Programme day" value="9" />
@@ -402,7 +401,7 @@ function Ring26() {
 
 function MiniStat({ label, value, accent, white }: { label: string; value: string; accent?: boolean; white?: boolean }) {
   return (
-    <div className={`rounded-lg border p-3 ${white ? "border-transparent bg-paper text-paper-ink" : "border-white/8 bg-white/[0.02]"}`}>
+    <div className={`rounded-lg border p-3 ${white ? "border-transparent bg-paper text-paper-ink" : "border-black/8 bg-black/[0.02]"}`}>
       <p className={`font-mono text-[0.5rem] uppercase tracking-widest ${white ? "text-zinc-500" : "text-faint"}`}>{label}</p>
       <p className={`display-num mt-1.5 text-2xl ${white ? "text-paper-ink" : accent ? "text-brand" : "text-ink"}`}>{value}</p>
     </div>
@@ -413,7 +412,7 @@ function MiniStat({ label, value, accent, white }: { label: string; value: strin
 
 function Stat({ value, label }: { value: number; label: string }) {
   return (
-    <div className="rounded-[var(--radius-card)] border border-white/8 bg-white/[0.02] px-4 py-5 text-center">
+    <div className="rounded-[var(--radius-card)] border border-black/8 bg-black/[0.02] px-4 py-5 text-center">
       <p className="display-num text-3xl text-ink"><NumberTicker value={value} /></p>
       <p className="mono-label mt-2 text-[0.52rem]">{label}</p>
     </div>

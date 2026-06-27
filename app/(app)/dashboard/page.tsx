@@ -92,7 +92,7 @@ function Hero({ project, tasks }: { project: ProjectMeta; tasks: Task[] }) {
               </p>
               <p className="display-num mt-2 text-5xl text-paper-ink">
                 <NumberTicker value={overall} />
-                <span className="text-2xl text-zinc-400">%</span>
+                <span className="text-2xl text-zinc-600">%</span>
               </p>
               <p className="mt-1 text-[0.7rem] text-zinc-500">weighted · 3 lines</p>
             </div>
@@ -104,11 +104,11 @@ function Hero({ project, tasks }: { project: ProjectMeta; tasks: Task[] }) {
 
       {/* quick task tally */}
       <Reveal delay={200}>
-        <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-[var(--radius-card)] border border-white/8 bg-white/[0.015] px-5 py-3 text-sm">
+        <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-[var(--radius-card)] border border-black/8 bg-black/[0.015] px-5 py-3 text-sm">
           <Tally n={tasksDone(tasks)} label="completed" tone="ink" />
-          <span className="h-4 w-px bg-white/10" />
+          <span className="h-4 w-px bg-black/10" />
           <Tally n={tasksActive(tasks)} label="in progress" tone="brand" />
-          <span className="h-4 w-px bg-white/10" />
+          <span className="h-4 w-px bg-black/10" />
           <Tally n={tasksTotal(tasks) - tasksDone(tasks) - tasksActive(tasks)} label="upcoming" tone="mute" />
           <span className="ml-auto font-mono text-[0.66rem] uppercase tracking-widest text-faint">
             {project.workWeek}
@@ -215,7 +215,7 @@ function TeamSection({ departments, team }: { departments: Department[]; team: M
         <Reveal>
           <div className="card h-full p-6">
             <p className="mono-label">Departments</p>
-            <ul className="mt-4 divide-y divide-white/8">
+            <ul className="mt-4 divide-y divide-black/8">
               {departments.map((dpt) => (
                 <li key={dpt.code} className="flex items-start gap-4 py-3.5">
                   <RoleBadge code={dpt.code} size="md" />
@@ -238,12 +238,12 @@ function TeamSection({ departments, team }: { departments: Department[]; team: M
                 <div
                   key={m.name}
                   className={`relative flex items-center gap-3 rounded-xl border p-3.5 ${
-                    m.lead ? "border-brand/40 bg-brand/[0.06]" : "border-white/8 bg-white/[0.02]"
+                    m.lead ? "border-brand/40 bg-brand/[0.06]" : "border-black/8 bg-black/[0.02]"
                   }`}
                 >
                   <span
                     className={`grid h-11 w-11 shrink-0 place-items-center rounded-full font-display text-lg ${
-                      m.lead ? "bg-brand text-white" : "bg-white/10 text-ink"
+                      m.lead ? "bg-brand text-white" : "bg-black/10 text-ink"
                     }`}
                   >
                     {m.name
@@ -275,7 +275,7 @@ function TeamSection({ departments, team }: { departments: Department[]; team: M
 
       {/* CTA */}
       <Reveal>
-        <div className="mt-5 flex flex-col items-start justify-between gap-4 rounded-[var(--radius-card)] border border-white/8 bg-gradient-to-r from-brand/[0.12] to-transparent p-6 sm:flex-row sm:items-center">
+        <div className="mt-5 flex flex-col items-start justify-between gap-4 rounded-[var(--radius-card)] border border-black/8 bg-gradient-to-r from-brand/[0.12] to-transparent p-6 sm:flex-row sm:items-center">
           <div>
             <p className="text-lg font-semibold text-ink">Need a deeper status read?</p>
             <p className="text-sm text-mute">

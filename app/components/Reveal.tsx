@@ -33,7 +33,7 @@ export function Reveal({
     io.observe(el);
     // Safety net: never leave content permanently hidden if IO doesn't fire
     // (off-screen at load, prerendered captures, crawlers).
-    const fallback = window.setTimeout(() => setShown(true), 1800);
+    const fallback = window.setTimeout(() => setShown(true), 900);
     return () => {
       io.disconnect();
       window.clearTimeout(fallback);

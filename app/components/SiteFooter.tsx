@@ -4,7 +4,7 @@ import { fmtLong } from "@/app/lib/helpers";
 
 export function SiteFooter({ project: PROJECT }: { project: ProjectMeta }) {
   return (
-    <footer id="contact" className="relative mt-24 border-t border-white/10 bg-canvas-2">
+    <footer id="contact" className="relative mt-24 border-t border-black/10 bg-canvas-2">
       <div className="h-[3px] w-full bg-gradient-to-r from-brand-bright via-brand to-brand-deep" />
       <div className="mx-auto max-w-[1240px] px-4 py-14 sm:px-6">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
@@ -58,7 +58,7 @@ export function SiteFooter({ project: PROJECT }: { project: ProjectMeta }) {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-faint sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-2 border-t border-black/10 pt-6 text-xs text-faint sm:flex-row sm:items-center sm:justify-between">
           <span>
             © 2026 {PROJECT.builder}. Built for {PROJECT.client}.
           </span>

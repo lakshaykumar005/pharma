@@ -17,7 +17,7 @@ export function RoleBadge({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border border-white/14 font-mono uppercase tracking-widest text-mute ${
+      className={`inline-flex items-center gap-1.5 rounded-full border border-black/14 font-mono uppercase tracking-widest text-mute ${
         size === "md" ? "px-2.5 py-1 text-[0.66rem]" : "px-2 py-0.5 text-[0.6rem]"
       }`}
     >

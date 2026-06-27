@@ -31,11 +31,11 @@ function Bar({ task, project }: { task: Task; project: ProjectMeta }) {
         width: `${width}%`,
         minWidth: 22,
         borderColor: complete
-          ? "rgba(255,255,255,0.22)"
+          ? "rgba(0,0,0,0.22)"
           : started
             ? "rgba(236,28,43,0.55)"
-            : "rgba(255,255,255,0.14)",
-        background: complete ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.03)",
+            : "rgba(0,0,0,0.14)",
+        background: complete ? "rgba(0,0,0,0.10)" : "rgba(0,0,0,0.03)",
       }}
       title={`${task.desc} · ${fmtShort(task.start)}–${fmtShort(task.end)} · ${task.pct}%`}
     >
@@ -44,7 +44,7 @@ function Bar({ task, project }: { task: Task; project: ProjectMeta }) {
         style={{
           width: `${task.pct}%`,
           background: complete
-            ? "linear-gradient(90deg,#ffffff,#d8d8d8)"
+            ? "linear-gradient(90deg,#202024,#3b3b42)"
             : "linear-gradient(90deg,var(--color-brand-bright),var(--color-brand-deep))",
         }}
       />
@@ -64,17 +64,17 @@ export function Timeline({ phases, project }: { phases: Phase[]; project: Projec
   return (
     <div className="card overflow-hidden">
       {/* legend */}
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-white/8 px-5 py-4">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-black/8 px-5 py-4">
         <span className="mono-label text-ink/80">Programme timeline</span>
         <span className="flex items-center gap-2 text-xs text-mute">
-          <span className="h-2.5 w-4 rounded-sm bg-gradient-to-r from-white to-zinc-300" /> Complete
+          <span className="h-2.5 w-4 rounded-sm bg-gradient-to-r from-[#1b1d22] to-zinc-700" /> Complete
         </span>
         <span className="flex items-center gap-2 text-xs text-mute">
           <span className="h-2.5 w-4 rounded-sm bg-gradient-to-r from-brand-bright to-brand-deep" /> In
           progress
         </span>
         <span className="flex items-center gap-2 text-xs text-mute">
-          <span className="h-2.5 w-4 rounded-sm border border-white/20 bg-white/5" /> Upcoming
+          <span className="h-2.5 w-4 rounded-sm border border-black/20 bg-black/5" /> Upcoming
         </span>
         <span className="flex items-center gap-2 text-xs text-mute">
           <span className="h-3 w-3 rotate-45 rounded-[2px] bg-brand" /> Milestone
@@ -87,7 +87,7 @@ export function Timeline({ phases, project }: { phases: Phase[]; project: Projec
       <div className="overflow-x-auto">
         <div className="min-w-[720px]">
           {/* month header */}
-          <div className="grid grid-cols-[150px_1fr] border-b border-white/8 sm:grid-cols-[220px_1fr]">
+          <div className="grid grid-cols-[150px_1fr] border-b border-black/8 sm:grid-cols-[220px_1fr]">
             <div className="sticky left-0 z-20 bg-canvas-2 px-4 py-2">
               <span className="mono-label">Task</span>
             </div>
@@ -95,7 +95,7 @@ export function Timeline({ phases, project }: { phases: Phase[]; project: Projec
               {bands.map((m) => (
                 <div
                   key={m.label}
-                  className="absolute top-0 flex h-full items-center border-l border-white/8 pl-2"
+                  className="absolute top-0 flex h-full items-center border-l border-black/8 pl-2"
                   style={{ left: `${m.left}%`, width: `${m.width}%` }}
                 >
                   <span className="font-mono text-[0.66rem] uppercase tracking-widest text-faint">
@@ -110,7 +110,7 @@ export function Timeline({ phases, project }: { phases: Phase[]; project: Projec
           {phases.map((phase) => (
             <div key={phase.code}>
               {/* phase header */}
-              <div className="grid grid-cols-[150px_1fr] border-b border-white/8 bg-white/[0.02] sm:grid-cols-[220px_1fr]">
+              <div className="grid grid-cols-[150px_1fr] border-b border-black/8 bg-black/[0.02] sm:grid-cols-[220px_1fr]">
                 <div className="sticky left-0 z-20 bg-canvas-2 px-4 py-2.5">
                   <span className="block font-mono text-[0.6rem] tracking-widest text-brand-bright">
                     {phase.code}
@@ -136,7 +136,7 @@ export function Timeline({ phases, project }: { phases: Phase[]; project: Projec
               {phase.tasks.map((task) => (
                 <div
                   key={task.id}
-                  className="grid grid-cols-[150px_1fr] border-b border-white/[0.05] last:border-0 hover:bg-white/[0.015] sm:grid-cols-[220px_1fr]"
+                  className="grid grid-cols-[150px_1fr] border-b border-black/[0.05] last:border-0 hover:bg-black/[0.015] sm:grid-cols-[220px_1fr]"
                 >
                   <div className="sticky left-0 z-20 flex items-center gap-2 bg-canvas-2 px-4 py-2.5">
                     <RoleBadge code={task.role} />

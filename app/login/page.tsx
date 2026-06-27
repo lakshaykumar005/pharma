@@ -41,7 +41,7 @@ export default async function LoginPage({
 
           <LoginForm from={from} />
 
-          <div className="mt-7 rounded-xl border border-white/8 bg-white/[0.02] p-4">
+          <div className="mt-7 rounded-xl border border-black/8 bg-black/[0.02] p-4">
             <p className="mono-label">Demo access</p>
             <ul className="mt-2 space-y-1 font-mono text-[0.72rem] text-mute">
               <li>admin@anthem.local · anthem123 <span className="text-faint">(full edit)</span></li>

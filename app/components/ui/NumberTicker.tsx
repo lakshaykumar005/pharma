@@ -34,20 +34,24 @@ export function NumberTicker({
       raf = requestAnimationFrame(tick);
     };
 
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting && !started) {
-          started = true;
-          run();
-          io.disconnect();
-        }
-      },
-      { threshold: 0.4 },
-    );
-    io.observe(el);
+    const start = () => {
+      if (started) return;
+      started = true;
+      run();
+      io?.disconnect();
+    };
+
+    const io =
+      typeof IntersectionObserver !== "undefined"
+        ? new IntersectionObserver(([e]) => e.isIntersecting && start(), { threshold: 0.4 })
+        : null;
+    io?.observe(el);
+    if (!io) start();
+    const fallback = window.setTimeout(start, 1400); // never leave a "0" visible
     return () => {
-      io.disconnect();
+      io?.disconnect();
       cancelAnimationFrame(raf);
+      window.clearTimeout(fallback);
     };
   }, [value, duration]);
 

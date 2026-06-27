@@ -253,7 +253,7 @@ body {
 
 /* dotted / grid hero pattern helpers */
 .bg-dot {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(0, 0, 0, 0.07) 1px, transparent 1px);
   background-size: 22px 22px;
   -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 30%, #000 40%, transparent 75%);
   mask-image: radial-gradient(ellipse 60% 60% at 50% 30%, #000 40%, transparent 75%);

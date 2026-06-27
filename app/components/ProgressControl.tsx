@@ -25,7 +25,7 @@ export function ProgressControl({
 
   const fill =
     pct >= 100
-      ? "linear-gradient(90deg,#fff,#cfcfcf)"
+      ? "linear-gradient(90deg,#202024,#3b3b42)"
       : "linear-gradient(90deg,var(--color-brand-bright),var(--color-brand-deep))";
 
   async function save() {
@@ -57,7 +57,7 @@ export function ProgressControl({
         <span className="display-num text-xl text-ink">{pct}%</span>
       </div>
 
-      <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-white/8">
+      <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-black/8">
         <div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${pct}%`, background: fill }} />
       </div>
 
@@ -73,7 +73,7 @@ export function ProgressControl({
               step={5}
               value={pct}
               onChange={(e) => setPct(Number(e.target.value))}
-              className="h-2 flex-1 cursor-pointer appearance-none rounded-full bg-white/10 accent-brand"
+              className="h-2 flex-1 cursor-pointer appearance-none rounded-full bg-black/10 accent-brand"
               aria-label="Set progress"
             />
             <div className="flex gap-1.5">
@@ -83,7 +83,7 @@ export function ProgressControl({
                   type="button"
                   onClick={() => setPct(v)}
                   className={`rounded-md px-2 py-1 font-mono text-[0.6rem] transition-colors ${
-                    pct === v ? "bg-brand text-white" : "bg-white/[0.06] text-mute hover:text-ink"
+                    pct === v ? "bg-brand text-white" : "bg-black/[0.06] text-mute hover:text-ink"
                   }`}
                 >
                   {v}

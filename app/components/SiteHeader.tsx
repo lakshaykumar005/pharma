@@ -50,7 +50,7 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
   return (
     <header
       className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
-        scrolled ? "border-white/10 bg-canvas/85 backdrop-blur-xl" : "border-transparent bg-transparent"
+        scrolled ? "border-black/10 bg-canvas/85 backdrop-blur-xl" : "border-transparent bg-transparent"
       }`}
     >
       <div className="h-[3px] w-full bg-gradient-to-r from-brand-deep via-brand to-brand-bright" />
@@ -82,7 +82,7 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
                   }`}
                 >
                   {active === n.id && (
-                    <span className="absolute inset-0 -z-10 rounded-full bg-white/[0.06] ring-1 ring-white/10" />
+                    <span className="absolute inset-0 -z-10 rounded-full bg-black/[0.06] ring-1 ring-black/10" />
                   )}
                   {n.label}
                 </Link>
@@ -95,7 +95,7 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
                 <span className="h-1.5 w-1.5 rounded-full bg-brand-bright animate-[blink_1.6s_ease-in-out_infinite]" />
                 Live · {asOf}
               </span>
-              <span className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] py-1 pl-1 pr-3">
+              <span className="flex items-center gap-2 rounded-full border border-black/10 bg-black/[0.03] py-1 pl-1 pr-3">
                 <span className="grid h-7 w-7 place-items-center rounded-full bg-brand/20 font-mono text-[0.62rem] text-brand-bright">
                   {initials(user.name)}
                 </span>
@@ -109,7 +109,7 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
                 </span>
               </span>
               <form action={logoutAction}>
-                <button className="rounded-full border border-white/10 px-3 py-2 text-xs font-medium text-mute transition-colors hover:border-brand/40 hover:text-ink">
+                <button className="rounded-full border border-black/10 px-3 py-2 text-xs font-medium text-mute transition-colors hover:border-brand/40 hover:text-ink">
                   Sign out
                 </button>
               </form>
@@ -120,7 +120,7 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
               aria-label="Toggle menu"
               aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
-              className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.03] md:hidden"
+              className="grid h-10 w-10 place-items-center rounded-lg border border-black/10 bg-black/[0.03] md:hidden"
             >
               <span className="relative block h-3.5 w-5">
                 <span className={`absolute left-0 h-0.5 w-5 rounded bg-ink transition-all ${open ? "top-1.5 rotate-45" : "top-0"}`} />
@@ -139,7 +139,7 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
       {/* mobile menu */}
       {user && (
         <div
-          className={`overflow-hidden border-t border-white/10 bg-canvas/95 backdrop-blur-xl transition-[max-height] duration-300 md:hidden ${
+          className={`overflow-hidden border-t border-black/10 bg-canvas/95 backdrop-blur-xl transition-[max-height] duration-300 md:hidden ${
             open ? "max-h-96" : "max-h-0 border-transparent"
           }`}
         >
@@ -150,13 +150,13 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
                 href={n.href}
                 onClick={() => setOpen(false)}
                 className={`rounded-lg px-3 py-3 text-base font-medium ${
-                  active === n.id ? "bg-white/[0.06] text-ink" : "text-mute"
+                  active === n.id ? "bg-black/[0.06] text-ink" : "text-mute"
                 }`}
               >
                 {n.label}
               </Link>
             ))}
-            <div className="mt-2 flex items-center justify-between border-t border-white/10 pt-3">
+            <div className="mt-2 flex items-center justify-between border-t border-black/10 pt-3">
               <span className="flex items-center gap-2">
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-brand/20 font-mono text-[0.62rem] text-brand-bright">
                   {initials(user.name)}
@@ -169,7 +169,7 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
                 </span>
               </span>
               <form action={logoutAction}>
-                <button className="rounded-full border border-white/10 px-3 py-2 text-xs font-medium text-mute">
+                <button className="rounded-full border border-black/10 px-3 py-2 text-xs font-medium text-mute">
                   Sign out
                 </button>
               </form>

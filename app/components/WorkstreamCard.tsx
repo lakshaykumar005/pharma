@@ -37,7 +37,7 @@ export function WorkstreamCard({
       </div>
 
       {/* meta */}
-      <div className="mt-5 grid grid-cols-3 gap-2 border-y border-white/8 py-3 text-center">
+      <div className="mt-5 grid grid-cols-3 gap-2 border-y border-black/8 py-3 text-center">
         <Meta label="Window" value={`${fmtShort(phase.start)}–${fmtShort(phase.end)}`} />
         <Meta label="Tasks" value={`${done}/${tasks.length} done`} />
         <Meta label="Target" value={fmtShort(phase.end)} />
@@ -49,7 +49,7 @@ export function WorkstreamCard({
           <li key={t.id}>
             <Link
               href={`/task/${t.id}`}
-              className="group flex items-center gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-white/[0.04]"
+              className="group flex items-center gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-black/[0.04]"
             >
               <RoleBadge code={t.role} />
               <span className="min-w-0 flex-1">
@@ -63,14 +63,14 @@ export function WorkstreamCard({
                     </span>
                   )}
                 </span>
-                <span className="mt-1 block h-1 w-full overflow-hidden rounded-full bg-white/8">
+                <span className="mt-1 block h-1 w-full overflow-hidden rounded-full bg-black/8">
                   <span
                     className="block h-full rounded-full"
                     style={{
                       width: `${t.pct}%`,
                       background:
                         t.pct >= 100
-                          ? "linear-gradient(90deg,#fff,#cfcfcf)"
+                          ? "linear-gradient(90deg,#202024,#3b3b42)"
                           : "linear-gradient(90deg,var(--color-brand-bright),var(--color-brand-deep))",
                     }}
                   />
@@ -101,7 +101,7 @@ export function WorkstreamCard({
         <span aria-hidden>→</span>
       </Link>
 
-      <span className="pointer-events-none mt-4 select-none text-right font-display text-5xl leading-none text-white/[0.04]">
+      <span className="pointer-events-none mt-4 select-none text-right font-display text-5xl leading-none text-black/[0.04]">
         0{index + 1}
       </span>
     </article>

@@ -47,7 +47,7 @@ export function TiltCard({
           className="pointer-events-none absolute inset-0 z-20 rounded-[var(--radius-card)] transition-opacity duration-300"
           style={{
             opacity: t.active ? 1 : 0,
-            background: `radial-gradient(360px circle at ${t.gx}% ${t.gy}%, rgba(255,255,255,0.16), transparent 55%)`,
+            background: `radial-gradient(360px circle at ${t.gx}% ${t.gy}%, rgba(0,0,0,0.16), transparent 55%)`,
           }}
         />
         {children}

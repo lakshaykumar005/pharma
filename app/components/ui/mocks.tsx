@@ -8,19 +8,19 @@ export function ChecklistMock({ light = false }: { light?: boolean }) {
     ["Connect piping & power", false],
     ["Pre-commissioning checks", false],
   ];
-  const line = light ? "border-black/10" : "border-white/10";
-  const sub = light ? "bg-black/[0.03]" : "bg-white/[0.03]";
-  const text = light ? "text-zinc-700" : "text-ink/85";
-  const muted = light ? "text-zinc-400" : "text-faint";
+  const line = light ? "border-white/10" : "border-black/10";
+  const sub = light ? "bg-white/[0.03]" : "bg-black/[0.03]";
+  const text = light ? "text-zinc-300" : "text-ink/85";
+  const muted = light ? "text-zinc-600" : "text-faint";
   return (
-    <div className={`rounded-xl border ${line} ${light ? "bg-white" : "bg-canvas/60"} p-3.5 shadow-sm`}>
+    <div className={`rounded-xl border ${line} ${light ? "bg-paper" : "bg-canvas/60"} p-3.5 shadow-sm`}>
       <div className="flex items-center justify-between">
-        <span className={`text-[0.72rem] font-semibold ${light ? "text-zinc-800" : "text-ink"}`}>
+        <span className={`text-[0.72rem] font-semibold ${light ? "text-zinc-200" : "text-ink"}`}>
           Demo-plant installation
         </span>
         <span className={`font-mono text-[0.6rem] ${muted}`}>2/4 · 50%</span>
       </div>
-      <div className={`mt-2 h-1.5 w-full overflow-hidden rounded-full ${light ? "bg-black/8" : "bg-white/10"}`}>
+      <div className={`mt-2 h-1.5 w-full overflow-hidden rounded-full ${light ? "bg-white/8" : "bg-black/10"}`}>
         <div className="h-full w-1/2 rounded-full bg-gradient-to-r from-brand-bright to-brand-deep" />
       </div>
       <ul className="mt-3 space-y-1.5">
@@ -28,7 +28,7 @@ export function ChecklistMock({ light = false }: { light?: boolean }) {
           <li key={label} className={`flex items-center gap-2.5 rounded-md border ${line} ${sub} px-2.5 py-1.5`}>
             <span
               className={`grid h-4 w-4 place-items-center rounded border ${
-                done ? "border-brand bg-brand text-white" : light ? "border-black/20" : "border-white/25"
+                done ? "border-brand bg-brand text-white" : light ? "border-white/20" : "border-black/25"
               }`}
             >
               {done && (
@@ -55,12 +55,12 @@ export function GanttMock() {
   ];
   const fill = (t: string) =>
     t === "done"
-      ? "linear-gradient(90deg,#fff,#cfcfcf)"
+      ? "linear-gradient(90deg,#202024,#3b3b42)"
       : t === "live"
         ? "linear-gradient(90deg,var(--color-brand-bright),var(--color-brand-deep))"
         : "transparent";
   return (
-    <div className="rounded-xl border border-white/10 bg-canvas/60 p-3.5">
+    <div className="rounded-xl border border-black/10 bg-canvas/60 p-3.5">
       <div className="flex items-center justify-between text-[0.58rem] font-mono uppercase tracking-widest text-faint">
         <span>Programme timeline</span>
         <span className="text-brand-bright">Today</span>
@@ -75,7 +75,7 @@ export function GanttMock() {
                 left: `${b.left}%`,
                 width: `${b.width}%`,
                 background: fill(b.tone),
-                borderColor: b.tone === "up" ? "rgba(255,255,255,0.18)" : b.tone === "live" ? "rgba(236,28,43,0.5)" : "rgba(255,255,255,0.25)",
+                borderColor: b.tone === "up" ? "rgba(0,0,0,0.18)" : b.tone === "live" ? "rgba(236,28,43,0.5)" : "rgba(0,0,0,0.25)",
               }}
             />
           </div>
@@ -110,7 +110,7 @@ function Ring({ value }: { value: number }) {
   return (
     <div className="relative h-16 w-16">
       <svg width="64" height="64" className="-rotate-90">
-        <circle cx="32" cy="32" r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" />
+        <circle cx="32" cy="32" r={r} fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="6" />
         <circle cx="32" cy="32" r={r} fill="none" stroke="var(--color-brand)" strokeWidth="6" strokeLinecap="round" strokeDasharray={`${(value / 100) * c} ${c}`} />
       </svg>
       <span className="display-num absolute inset-0 grid place-items-center text-lg text-ink">{value}%</span>
@@ -126,7 +126,7 @@ export function RolePills() {
         <span
           key={r}
           className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[0.62rem] ${
-            can ? "border-brand/40 bg-brand/10 text-brand-bright" : "border-white/12 text-faint"
+            can ? "border-brand/40 bg-brand/10 text-brand-bright" : "border-black/12 text-faint"
           }`}
         >
           <span className={`h-1.5 w-1.5 rounded-full ${can ? "bg-brand-bright" : "bg-faint"}`} />
@@ -140,7 +140,7 @@ export function RolePills() {
 
 export function AvatarStack() {
   const people = ["KG", "RK", "KR", "SP", "BH"];
-  const tones = ["bg-brand text-white", "bg-white/15 text-ink", "bg-white/15 text-ink", "bg-white/15 text-ink", "bg-white/15 text-ink"];
+  const tones = ["bg-brand text-white", "bg-black/15 text-ink", "bg-black/15 text-ink", "bg-black/15 text-ink", "bg-black/15 text-ink"];
   return (
     <div className="flex items-center">
       {people.map((p, i) => (

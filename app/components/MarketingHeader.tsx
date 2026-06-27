@@ -24,7 +24,7 @@ export function MarketingHeader({ authed }: { authed: boolean }) {
   return (
     <header
       className={`sticky top-0 z-50 transition-colors duration-300 ${
-        scrolled ? "border-b border-white/10 bg-canvas/80 backdrop-blur-xl" : "border-b border-transparent"
+        scrolled ? "border-b border-black/10 bg-canvas/80 backdrop-blur-xl" : "border-b border-transparent"
       }`}
     >
       <div className="h-[3px] w-full bg-gradient-to-r from-brand-deep via-brand to-brand-bright" />
@@ -61,7 +61,7 @@ export function MarketingHeader({ authed }: { authed: boolean }) {
           <button
             aria-label="Menu"
             onClick={() => setOpen((v) => !v)}
-            className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.03] md:hidden"
+            className="grid h-10 w-10 place-items-center rounded-lg border border-black/10 bg-black/[0.03] md:hidden"
           >
             <span className="relative block h-3.5 w-5">
               <span className={`absolute left-0 h-0.5 w-5 rounded bg-ink transition-all ${open ? "top-1.5 rotate-45" : "top-0"}`} />
@@ -73,7 +73,7 @@ export function MarketingHeader({ authed }: { authed: boolean }) {
       </div>
 
       <div
-        className={`overflow-hidden border-t border-white/10 bg-canvas/95 backdrop-blur-xl transition-[max-height] duration-300 md:hidden ${
+        className={`overflow-hidden border-t border-black/10 bg-canvas/95 backdrop-blur-xl transition-[max-height] duration-300 md:hidden ${
           open ? "max-h-72" : "max-h-0 border-transparent"
         }`}
       >

@@ -1,10 +1,10 @@
 import { type Status } from "@/app/lib/helpers";
 
 const STYLES: Record<Status, string> = {
-  Complete: "border-white/25 text-ink bg-white/[0.06]",
+  Complete: "border-black/25 text-ink bg-black/[0.06]",
   "In progress": "border-brand/60 text-brand-bright bg-brand/10",
   Active: "border-brand/60 text-brand-bright bg-brand/10",
-  Upcoming: "border-white/12 text-faint bg-white/[0.02]",
+  Upcoming: "border-black/12 text-faint bg-black/[0.02]",
   Overdue: "border-transparent text-white bg-brand",
 };
 

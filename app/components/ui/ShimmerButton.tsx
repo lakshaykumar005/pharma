@@ -20,7 +20,7 @@ export function ShimmerButton({
     "shimmer-btn group inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-all duration-300",
     variant === "solid"
       ? "bg-brand text-white shadow-[0_10px_40px_-12px_rgba(236,28,43,0.8)] hover:shadow-[0_14px_50px_-10px_rgba(236,28,43,0.95)] hover:-translate-y-0.5"
-      : "border border-white/15 bg-white/[0.03] text-ink hover:border-brand/50 hover:bg-white/[0.06]",
+      : "border border-black/15 bg-black/[0.03] text-ink hover:border-brand/50 hover:bg-black/[0.06]",
     className,
   );
 

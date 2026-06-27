@@ -93,14 +93,14 @@ export function Subtasks({
       </div>
 
       {total > 0 && (
-        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/8">
+        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-black/8">
           <div
             className="h-full rounded-full transition-[width] duration-500"
             style={{
               width: `${pct}%`,
               background:
                 pct >= 100
-                  ? "linear-gradient(90deg,#fff,#cfcfcf)"
+                  ? "linear-gradient(90deg,#202024,#3b3b42)"
                   : "linear-gradient(90deg,var(--color-brand-bright),var(--color-brand-deep))",
             }}
           />
@@ -111,7 +111,7 @@ export function Subtasks({
         {items.map((s) => (
           <li
             key={s.id}
-            className="group flex items-center gap-3 rounded-lg border border-white/8 bg-white/[0.02] px-3 py-2.5"
+            className="group flex items-center gap-3 rounded-lg border border-black/8 bg-black/[0.02] px-3 py-2.5"
           >
             <button
               type="button"
@@ -119,7 +119,7 @@ export function Subtasks({
               disabled={!canEdit}
               aria-pressed={s.done}
               className={`grid h-5 w-5 shrink-0 place-items-center rounded-md border transition-colors ${
-                s.done ? "border-brand bg-brand text-white" : "border-white/25 text-transparent hover:border-brand/60"
+                s.done ? "border-brand bg-brand text-white" : "border-black/25 text-transparent hover:border-brand/60"
               } ${canEdit ? "cursor-pointer" : "cursor-default"}`}
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -144,7 +144,7 @@ export function Subtasks({
           </li>
         ))}
         {total === 0 && (
-          <li className="rounded-lg border border-dashed border-white/10 px-3 py-4 text-center text-sm text-faint">
+          <li className="rounded-lg border border-dashed border-black/10 px-3 py-4 text-center text-sm text-faint">
             {canEdit ? "No subtasks yet — add the first one below." : "No subtasks for this task."}
           </li>
         )}
@@ -157,7 +157,7 @@ export function Subtasks({
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Add a subtask…"
             maxLength={160}
-            className="flex-1 rounded-lg border border-white/12 bg-white/[0.03] px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-brand/60"
+            className="flex-1 rounded-lg border border-black/12 bg-black/[0.03] px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-brand/60"
           />
           <button
             type="submit"

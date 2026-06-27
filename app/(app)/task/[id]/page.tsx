@@ -54,7 +54,7 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
             <div className="flex flex-wrap items-center gap-2">
               <span className="chip border-brand/40 text-brand-bright">{phase.code}</span>
               {isMilestone && (
-                <span className="chip border-white/15 text-ink">
+                <span className="chip border-black/15 text-ink">
                   <span className="h-2 w-2 rotate-45 rounded-[1px] bg-brand" /> Milestone
                 </span>
               )}
@@ -111,7 +111,7 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
           />
 
           {/* baseline note */}
-          <div className="mt-6 flex items-start gap-3 rounded-xl border border-white/8 bg-white/[0.02] p-4">
+          <div className="mt-6 flex items-start gap-3 rounded-xl border border-black/8 bg-black/[0.02] p-4">
             <span
               className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full ${
                 onBaseline ? "bg-brand/15 text-brand-bright" : "bg-brand text-white"
@@ -141,7 +141,7 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
           <div className="card p-6">
             <p className="mono-label">Accountable</p>
             <div className="mt-4 flex items-center gap-3">
-              <span className="grid h-12 w-12 place-items-center rounded-full bg-white/10 font-display text-xl text-ink">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-black/10 font-display text-xl text-ink">
                 {task.owner
                   .split(" ")
                   .map((w) => w[0])
@@ -218,7 +218,7 @@ function DepGroup({ title, items, empty }: { title: string; items: Task[]; empty
             <li key={t.id}>
               <Link
                 href={`/task/${t.id}`}
-                className="group flex items-center gap-3 rounded-lg border border-white/8 bg-white/[0.02] px-3 py-2.5 transition-colors hover:border-brand/40 hover:bg-white/[0.04]"
+                className="group flex items-center gap-3 rounded-lg border border-black/8 bg-black/[0.02] px-3 py-2.5 transition-colors hover:border-brand/40 hover:bg-black/[0.04]"
               >
                 <RoleBadge code={t.role} />
                 <span className="min-w-0 flex-1 truncate text-sm text-ink/90 group-hover:text-ink">
@@ -241,7 +241,7 @@ function NavCard({ task, dir }: { task: Task | null; dir: "prev" | "next" }) {
       href={`/task/${task.id}`}
       className={`card card-hover flex items-center gap-3 p-4 ${dir === "next" ? "sm:flex-row-reverse sm:text-right" : ""}`}
     >
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 text-brand-bright">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-black/10 text-brand-bright">
         {dir === "prev" ? "←" : "→"}
       </span>
       <span className="min-w-0">

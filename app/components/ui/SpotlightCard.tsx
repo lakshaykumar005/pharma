@@ -51,7 +51,7 @@ export function SpotlightCard({
         className="pointer-events-none absolute inset-0 z-0 rounded-[var(--radius-card)] transition-opacity duration-300"
         style={{
           opacity: active ? 1 : 0,
-          background: `radial-gradient(260px circle at var(--mx) var(--my), rgba(255,255,255,0.14), transparent 45%)`,
+          background: `radial-gradient(260px circle at var(--mx) var(--my), rgba(0,0,0,0.14), transparent 45%)`,
           maskImage: "linear-gradient(#000,#000)",
           WebkitMask:
             "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
