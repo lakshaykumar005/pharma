@@ -68,23 +68,13 @@ html {
 }
 
 body {
+  /* plain canvas — section backgrounds are per-section; only the hero carries
+     the grid + glow texture */
   background-color: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* layered red glow + fine grid texture over deep black */
-  background-image:
-    radial-gradient(900px 520px at 88% -8%, rgba(236, 28, 43, 0.16), transparent 60%),
-    radial-gradient(700px 480px at -6% 6%, rgba(236, 28, 43, 0.07), transparent 55%),
-    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size:
-    auto,
-    auto,
-    46px 46px,
-    46px 46px;
-  background-attachment: fixed;
 }
 
 ::selection {
@@ -92,20 +82,15 @@ body {
   color: #fff;
 }
 
+/* hidden scrollbars (still scrollable) */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
 ::-webkit-scrollbar {
-  width: 11px;
-  height: 11px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-canvas);
-}
-::-webkit-scrollbar-thumb {
-  background: #2a2a31;
-  border-radius: 99px;
-  border: 3px solid var(--color-canvas);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-brand-deep);
+  width: 0;
+  height: 0;
+  background: transparent;
 }
 
 /* --------------------------- component utilities ------------------------- */
