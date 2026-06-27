@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Anthem Biosciences — Project Command Center
 
-## Getting Started
+A live, database-backed status dashboard for the **Anthem Biosciences Limited** ETP
+(effluent treatment plant) demonstration project, built by **Aapaavani Environmental
+Solutions**. Tracks three engineering lines — Demo-Plant & Sensors, SCADA Automation,
+Membrane Skid — through procurement, delivery, installation and commissioning.
 
-First, run the development server:
+Palette: **black · white · red**. Fully responsive (mobile + desktop).
+
+## Stack
+
+- **Next.js 16** (App Router, Turbopack) + **React 19**
+- **Tailwind CSS v4** (CSS-first `@theme`)
+- **Prisma 7** ORM with a **SQLite** database (better-sqlite3 driver adapter)
+- All data pages are **server-rendered on demand** from the database — no static data.
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install            # also runs `prisma generate`
+npm run db:migrate     # create the SQLite DB + schema  (first time)
+npm run db:seed        # load the real Gantt data
+npm run dev            # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Environment lives in `.env` (see `.env.example`):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+DATABASE_URL="file:./dev.db"
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+| Script | Purpose |
+| --- | --- |
+| `npm run dev` / `build` / `start` | Next.js dev / production build / serve |
+| `npm run db:migrate` | Create/apply migrations (dev) |
+| `npm run db:seed` | Seed the database from the project plan |
+| `npm run db:reset` | Drop, re-migrate and re-seed |
+| `npm run db:studio` | Open Prisma Studio to browse/edit data |
 
-To learn more about Next.js, take a look at the following resources:
+## API
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Method | Route | Description |
+| --- | --- | --- |
+| `GET` | `/api/snapshot` | Full programme state (project, phases, tasks, team) |
+| `GET` | `/api/tasks` | All tasks/milestones |
+| `GET` | `/api/tasks/:id` | One task with phase, dependencies, neighbours |
+| `PATCH` | `/api/tasks/:id` | Update `{ pct }`; rolls up to phase + milestone |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Editing a task's progress on its profile page writes through `PATCH` and the phase
+percentage is recomputed (work-day weighted) in a single transaction.
 
-## Deploy on Vercel
+## Data model
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`Project` (settings) · `Department` · `Member` · `Phase` · `Task` · `Dependency`
+(predecessor edges, FS/FF). Defined in [`prisma/schema.prisma`](prisma/schema.prisma),
+seeded in [`prisma/seed.ts`](prisma/seed.ts) from the real Gantt figures.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploying to production
+
+SQLite is for local development. For Vercel, provision a managed Postgres
+(e.g. Neon via the Vercel Marketplace), then:
+
+1. Change the datasource `provider` to `postgresql` in `prisma/schema.prisma`.
+2. Swap the driver adapter in [`app/lib/db.ts`](app/lib/db.ts) (e.g. `@prisma/adapter-neon`).
+3. Set `DATABASE_URL` to the Postgres connection string in the Vercel project env.
+4. Run `prisma migrate deploy` + seed.

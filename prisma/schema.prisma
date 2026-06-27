@@ -1,0 +1,120 @@
+// Anthem Biosciences — Command Center data model
+// Dates are stored as ISO 'yyyy-mm-dd' strings to match the UI/helpers exactly.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+/// Singleton project / programme settings.
+model Project {
+  id        String   @id @default("anthem")
+  client    String
+  builder   String
+  tagline   String
+  programme String
+  blurb     String
+  startDate String
+  endDate   String
+  asOf      String
+  priority  String
+  lead      String
+  workWeek  String
+  axisStart String
+  axisEnd   String
+  updatedAt DateTime @updatedAt
+}
+
+/// Project role types / departments (DES, PRO, A&P, SER, SIM).
+model Department {
+  code        String   @id
+  name        String
+  description String
+  order       Int      @default(0)
+  members     Member[]
+  tasks       Task[]
+}
+
+/// Project team members.
+model Member {
+  id       Int        @id @default(autoincrement())
+  name     String
+  title    String
+  lead     Boolean    @default(false)
+  order    Int        @default(0)
+  roleCode String
+  role     Department @relation(fields: [roleCode], references: [code])
+}
+
+/// A workstream / phase (PH-01 …).
+model Phase {
+  code      String @id
+  name      String
+  subtitle  String
+  startDate String
+  endDate   String
+  pct       Int
+  order     Int    @default(0)
+  tasks     Task[]
+}
+
+/// A task or milestone within a phase.
+model Task {
+  id            Int          @id
+  type          String // "T" task | "M" milestone
+  description   String
+  owner         String
+  startDate     String
+  endDate       String
+  baselineStart String
+  baselineEnd   String
+  workDays      Int
+  pct           Int
+  depType       String // "FS" | "FF"
+  critical      Boolean      @default(false)
+  order         Int          @default(0)
+  roleCode      String
+  role          Department   @relation(fields: [roleCode], references: [code])
+  phaseCode     String
+  phase         Phase        @relation(fields: [phaseCode], references: [code])
+  predecessors  Dependency[] @relation("TaskPredecessors")
+  dependents    Dependency[] @relation("TaskDependents")
+  subtasks      Subtask[]
+  updatedAt     DateTime     @updatedAt
+}
+
+/// Checklist items under a task. Completing them drives the task's progress.
+model Subtask {
+  id        Int      @id @default(autoincrement())
+  title     String
+  done      Boolean  @default(false)
+  order     Int      @default(0)
+  taskId    Int
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+/// Application users who can sign in. Roles: ADMIN | EDITOR | VIEWER.
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         String   @default("VIEWER")
+  createdAt    DateTime @default(now())
+}
+
+/// Predecessor edges (Finish-to-Start / Finish-to-Finish chain).
+model Dependency {
+  id          Int  @id @default(autoincrement())
+  taskId      Int
+  task        Task @relation("TaskPredecessors", fields: [taskId], references: [id])
+  dependsOnId Int
+  dependsOn   Task @relation("TaskDependents", fields: [dependsOnId], references: [id])
+
+  @@unique([taskId, dependsOnId])
+}
