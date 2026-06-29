@@ -8,14 +8,21 @@ import { PrismaPg } from "@prisma/adapter-pg";
  */
 function createClient() {
   const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
-    throw new Error("DATABASE_URL is not set — add your Supabase transaction-pooler URL to .env");
+  // Clear, actionable error instead of Prisma's cryptic "Invalid URL".
+  // Skipped during `next build` (no DB needed) so the build never fails on this.
+  const unfilled = !connectionString || /\[[A-Za-z-]+\]/.test(connectionString);
+  if (unfilled && process.env.NEXT_PHASE !== "phase-production-build") {
+    throw new Error(
+      "DATABASE_URL is missing or still contains [placeholders]. Paste your Supabase " +
+        "Transaction pooler connection string into .env (Supabase → Connect → Transaction " +
+        "pooler), replace [YOUR-PASSWORD] (URL-encode special characters), then restart. See .env.example.",
+    );
   }
   // Cap the node-postgres pool size per instance. The `connection_limit` URL
   // param is ignored by the driver adapter, so we set pg's `max` here to keep
   // serverless instances from exhausting the Supabase transaction pooler.
   const max = Number(process.env.DATABASE_POOL_MAX ?? 1);
-  const adapter = new PrismaPg({ connectionString, max });
+  const adapter = new PrismaPg({ connectionString: connectionString ?? "postgresql://unset", max });
   return new PrismaClient({ adapter });
 }
 
