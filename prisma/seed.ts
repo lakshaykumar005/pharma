@@ -77,9 +77,9 @@ const SUBTASKS: Record<number, { title: string; done: boolean }[]> = {
 };
 
 const USERS = [
-  { email: "admin@anthem.local", name: "Keerthan Gowda", role: "ADMIN", password: "anthem123" },
-  { email: "editor@anthem.local", name: "Rahul Karkera", role: "EDITOR", password: "editor123" },
-  { email: "viewer@anthem.local", name: "Site Viewer", role: "VIEWER", password: "viewer123" },
+  { email: "admin@anthem.local", name: "Keerthan Gowda", role: "ADMIN", department: "PRO", password: "anthem123" },
+  { email: "editor@anthem.local", name: "Rahul Karkera", role: "EDITOR", department: "DES", password: "editor123" },
+  { email: "viewer@anthem.local", name: "Site Viewer", role: "VIEWER", department: null, password: "viewer123" },
 ];
 
 const PHASES = [
@@ -145,7 +145,13 @@ async function main() {
 
   for (const u of USERS) {
     await prisma.user.create({
-      data: { email: u.email, name: u.name, role: u.role, passwordHash: hashPassword(u.password) },
+      data: {
+        email: u.email,
+        name: u.name,
+        role: u.role,
+        department: u.department,
+        passwordHash: hashPassword(u.password),
+      },
     });
   }
 

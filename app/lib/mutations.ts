@@ -256,26 +256,44 @@ export async function deleteMember(id: number) {
 /* ------------------------------- users ----------------------------------- */
 
 const ROLES: Role[] = ["ADMIN", "EDITOR", "VIEWER"];
+const DEPT_CODES = ["DES", "PRO", "A&P", "SER", "SIM"];
 
-export async function createUser(input: { email: string; name: string; role: Role; password: string }) {
+/** Normalize an incoming department code: "" → null; validate against the set. */
+function cleanDept(value: string | null | undefined): string | null {
+  const v = (value ?? "").trim();
+  if (!v) return null;
+  if (!DEPT_CODES.includes(v)) throw new Error("Invalid department");
+  return v;
+}
+
+export async function createUser(input: {
+  email: string;
+  name: string;
+  role: Role;
+  password: string;
+  department?: string | null;
+}) {
   const email = input.email.trim().toLowerCase();
   const name = input.name.trim();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("Enter a valid email");
   if (!name) throw new Error("Name is required");
   if (!ROLES.includes(input.role)) throw new Error("Invalid role");
   if (input.password.length < 6) throw new Error("Password must be at least 6 characters");
+  const department = cleanDept(input.department);
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) throw new Error("A user with that email already exists");
 
   const user = await prisma.user.create({
-    data: { email, name, role: input.role, passwordHash: hashPassword(input.password) },
+    data: { email, name, role: input.role, department, passwordHash: hashPassword(input.password) },
   });
   return { id: user.id, email: user.email };
 }
 
-export async function setUserRole(id: number, role: Role) {
+/** Set both access role and functional department in one update. */
+export async function setUserAccess(id: number, role: Role, department: string | null | undefined) {
   if (!ROLES.includes(role)) throw new Error("Invalid role");
+  const dept = cleanDept(department);
   const user = await prisma.user.findUnique({ where: { id } });
   if (!user) throw new Error("User not found");
   // Don't allow removing the last admin.
@@ -283,8 +301,8 @@ export async function setUserRole(id: number, role: Role) {
     const admins = await prisma.user.count({ where: { role: "ADMIN" } });
     if (admins <= 1) throw new Error("Can't demote the last admin");
   }
-  await prisma.user.update({ where: { id }, data: { role } });
-  return { id, role };
+  await prisma.user.update({ where: { id }, data: { role, department: dept } });
+  return { id, role, department: dept };
 }
 
 export async function deleteUser(id: number, currentUserId: number) {
@@ -307,6 +325,124 @@ export async function changePassword(userId: number, oldPw: string, newPw: strin
   if (!verifyPassword(oldPw, user.passwordHash)) throw new Error("Current password is incorrect");
   await prisma.user.update({ where: { id: userId }, data: { passwordHash: hashPassword(newPw) } });
   return { ok: true };
+}
+
+/* ------------------------------- phases ---------------------------------- */
+
+const PHASE_CODE = /^[A-Z0-9-]{2,12}$/;
+
+export interface NewPhaseInput {
+  code: string;
+  name: string;
+  subtitle: string;
+  startDate: string;
+  endDate: string;
+}
+
+/** Create a phase (workstream) and seed its closing milestone. */
+export async function createPhase(input: NewPhaseInput) {
+  const code = input.code.trim().toUpperCase();
+  const name = input.name.trim();
+  const subtitle = input.subtitle.trim() || `${name} complete`;
+  if (!PHASE_CODE.test(code)) throw new Error("Code must be 2–12 chars: A–Z, 0–9, dash (e.g. PH-04)");
+  if (!name) throw new Error("Phase name is required");
+  if (!ISO.test(input.startDate) || !ISO.test(input.endDate)) throw new Error("Dates must be yyyy-mm-dd");
+  if (input.endDate < input.startDate) throw new Error("End date must be on/after start date");
+
+  const exists = await prisma.phase.findUnique({ where: { code } });
+  if (exists) throw new Error(`Phase ${code} already exists`);
+
+  return prisma.$transaction(async (tx) => {
+    const maxOrder = (await tx.phase.aggregate({ _max: { order: true } }))._max.order ?? 0;
+    const project = await tx.project.findFirst();
+    await tx.phase.create({
+      data: { code, name, subtitle, startDate: input.startDate, endDate: input.endDate, pct: 0, order: maxOrder + 1 },
+    });
+    // closing milestone so the phase reads consistently on the Gantt / cards
+    const maxId = (await tx.task.aggregate({ _max: { id: true } }))._max.id ?? 100;
+    const maxTaskOrder = (await tx.task.aggregate({ _max: { order: true } }))._max.order ?? 0;
+    await tx.task.create({
+      data: {
+        id: maxId + 1,
+        type: "M",
+        description: subtitle,
+        owner: project?.lead ?? "Unassigned",
+        startDate: input.endDate,
+        endDate: input.endDate,
+        baselineStart: input.endDate,
+        baselineEnd: input.endDate,
+        workDays: 0,
+        pct: 0,
+        depType: "FS",
+        critical: false,
+        order: maxTaskOrder + 1,
+        roleCode: "PRO",
+        phaseCode: code,
+      },
+    });
+    return { code };
+  });
+}
+
+export interface EditPhaseInput {
+  name?: string;
+  subtitle?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export async function updatePhase(code: string, input: EditPhaseInput) {
+  const phase = await prisma.phase.findUnique({ where: { code } });
+  if (!phase) throw new Error("Phase not found");
+  const data: Record<string, unknown> = {};
+  if (input.name !== undefined && input.name.trim()) data.name = input.name.trim();
+  if (input.subtitle !== undefined && input.subtitle.trim()) data.subtitle = input.subtitle.trim();
+  if (input.startDate !== undefined) {
+    if (!ISO.test(input.startDate)) throw new Error("Start date must be yyyy-mm-dd");
+    data.startDate = input.startDate;
+  }
+  if (input.endDate !== undefined) {
+    if (!ISO.test(input.endDate)) throw new Error("End date must be yyyy-mm-dd");
+    data.endDate = input.endDate;
+  }
+  await prisma.phase.update({ where: { code }, data });
+  return { code, name: (data.name as string) ?? phase.name };
+}
+
+/** Delete a phase. Refuses while it still has work tasks; clears its milestone. */
+export async function deletePhase(code: string) {
+  const phase = await prisma.phase.findUnique({ where: { code }, include: { tasks: true } });
+  if (!phase) throw new Error("Phase not found");
+  const workTasks = phase.tasks.filter((t) => t.type === "T");
+  if (workTasks.length > 0) {
+    throw new Error(`Move or delete this phase's ${workTasks.length} task(s) first`);
+  }
+  const ids = phase.tasks.map((t) => t.id);
+  return prisma.$transaction(async (tx) => {
+    if (ids.length) {
+      await tx.dependency.deleteMany({ where: { OR: [{ taskId: { in: ids } }, { dependsOnId: { in: ids } }] } });
+      await tx.subtask.deleteMany({ where: { taskId: { in: ids } } });
+      await tx.task.deleteMany({ where: { id: { in: ids } } });
+    }
+    await tx.phase.delete({ where: { code } });
+    return { code, name: phase.name };
+  });
+}
+
+/** Move a phase up/down in display order (swaps with its neighbour). */
+export async function reorderPhase(code: string, dir: "up" | "down") {
+  const phases = await prisma.phase.findMany({ orderBy: { order: "asc" } });
+  const idx = phases.findIndex((p) => p.code === code);
+  if (idx === -1) throw new Error("Phase not found");
+  const swapWith = dir === "up" ? idx - 1 : idx + 1;
+  if (swapWith < 0 || swapWith >= phases.length) return { code, moved: false };
+  const a = phases[idx];
+  const b = phases[swapWith];
+  await prisma.$transaction([
+    prisma.phase.update({ where: { code: a.code }, data: { order: b.order } }),
+    prisma.phase.update({ where: { code: b.code }, data: { order: a.order } }),
+  ]);
+  return { code, moved: true };
 }
 
 /* ------------------------------ project ---------------------------------- */

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireUser, canEdit } from "@/app/lib/auth";
+import { requireUser, canEdit, canEditTask } from "@/app/lib/auth";
 import { getTaskDetail, getProject } from "@/app/lib/queries";
-import { type Task } from "@/app/lib/types";
+import { type Task, DEPARTMENT_NAMES } from "@/app/lib/types";
 import { fmtLong, fmtShort, statusOf } from "@/app/lib/helpers";
 import { ProgressRing } from "@/app/components/ProgressRing";
 import { RoleBadge } from "@/app/components/RoleBadge";
@@ -30,6 +30,9 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
   const status = statusOf(task, project.asOf);
   const isMilestone = task.type === "M";
   const hasSubtasks = task.subtasks.length > 0;
+  // Engineers can only work on tasks assigned to them or in their own department.
+  const canWork = canEditTask(user, task);
+  const blockedByScope = canEdit(user.role) && !canWork;
   const onBaseline = task.start === task.baselineStart && task.end === task.baselineEnd;
   const cleanDesc = task.desc.replace(/^Milestone-\d+ · /, "");
 
@@ -100,20 +103,22 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
 
           {/* working state — active / blocked / on-hold */}
           {!isMilestone && (
-            <StateControl taskId={task.id} initial={task.state} canEdit={canEdit(user.role)} />
+            <StateControl taskId={task.id} initial={task.state} canEdit={canWork} />
           )}
 
-          {/* editable progress — writes to the database (editors/admins only) */}
+          {/* editable progress — writes to the database (managers + the owning department) */}
           <ProgressControl
             taskId={task.id}
             initialPct={task.pct}
-            readOnly={isMilestone || hasSubtasks || !canEdit(user.role)}
+            readOnly={isMilestone || hasSubtasks || !canWork}
             readOnlyNote={
               isMilestone
                 ? "Rolled up from this line's tasks — not directly editable."
                 : hasSubtasks
                   ? "Progress is driven by the subtask checklist below."
-                  : "View-only access. Sign in as an editor to update progress."
+                  : blockedByScope
+                    ? `This task belongs to ${task.owner} (${DEPARTMENT_NAMES[task.role]} department). Only they or a manager can update it.`
+                    : "View-only access. Sign in as an editor to update progress."
             }
           />
 
@@ -174,7 +179,7 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
       {/* subtasks (only for tasks, not milestones) */}
       {!isMilestone && (
         <div className="mt-5">
-          <Subtasks taskId={task.id} initial={task.subtasks} canEdit={canEdit(user.role)} />
+          <Subtasks taskId={task.id} initial={task.subtasks} canEdit={canWork} />
         </div>
       )}
 

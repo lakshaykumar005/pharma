@@ -49,17 +49,35 @@ try {
   check("Client blocked from /my-tasks", (await pathAfter(v.page, "/my-tasks")) === "/dashboard");
   await v.ctx.close();
 
-  // editor / engineer
+  // editor / engineer (Rahul Karkera · Design department)
   const e = await signIn(browser, "editor@anthem.local", "editor123");
   check("Engineer can open /my-tasks", (await pathAfter(e.page, "/my-tasks")) === "/my-tasks");
   check("Engineer blocked from /manage", (await pathAfter(e.page, "/manage")) === "/dashboard");
+  // department-scoped RBAC: an engineer can't write to a task outside their dept (negative, no write)
+  const snap = await (await e.page.request.get(`${BASE}/api/snapshot`)).json().catch(() => null);
+  let outId = null;
+  for (const ph of snap?.phases ?? [])
+    for (const t of ph.tasks)
+      if (t.type === "T" && t.role !== "DES" && t.owner !== "Rahul Karkera" && outId == null) outId = t.id;
+  if (outId != null) {
+    const res = await e.page.request.patch(`${BASE}/api/tasks/${outId}`, {
+      data: { pct: 50 },
+      headers: { "content-type": "application/json" },
+    });
+    check("Engineer blocked from out-of-dept task write (403)", res.status() === 403);
+  } else {
+    check("found an out-of-dept task to test", false);
+  }
   await e.ctx.close();
 
   // admin / manager
   const a = await signIn(browser, "admin@anthem.local", "anthem123");
   await shot(a.page, "qa-dashboard");
   check("Manager can open /manage", (await pathAfter(a.page, "/manage")) === "/manage");
-  check("Manage shows all panels", ["Tasks & assignments", "Onboard team", "Access", "Project settings"].every((t) => a.text?.includes?.(t) ?? true) && (await a.page.textContent("body")).includes("Project settings"));
+  {
+    const body = await a.page.textContent("body");
+    check("Manage shows all panels", ["Phases & plan", "Tasks & assignments", "Onboard team", "Access", "Project settings"].every((t) => body.includes(t)));
+  }
   await shot(a.page, "qa-manage");
   for (const id of ["plan", "timeline", "team", "activity"]) {
     await a.page.goto(`${BASE}/dashboard#${id}`, { waitUntil: "domcontentloaded" });
@@ -67,6 +85,13 @@ try {
   }
   check("Task profile renders", (await pathAfter(a.page, "/task/8")) === "/task/8");
   await shot(a.page, "qa-task");
+  // phase detail page
+  check(
+    "Phase detail renders",
+    (await pathAfter(a.page, "/phase/PH-01")) === "/phase/PH-01" &&
+      (await a.page.textContent("body")).includes("Phase plan"),
+  );
+  await shot(a.page, "qa-phase");
   // new features
   check("Alerts page renders", (await pathAfter(a.page, "/alerts")) === "/alerts" && (await a.page.textContent("body")).toLowerCase().includes("attention"));
   await shot(a.page, "qa-alerts");

@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { getTaskDetail } from "@/app/lib/queries";
 import { updateTaskProgress, setTaskState } from "@/app/lib/mutations";
 import { logActivity } from "@/app/lib/activity";
-import { checkOrigin, requireAuth, requireEditor } from "@/app/lib/api-guard";
+import { checkOrigin, requireAuth, requireTaskEditor } from "@/app/lib/api-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -22,11 +22,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const origin = checkOrigin(req);
   if (origin) return origin;
-  const guard = await requireEditor();
-  if ("res" in guard) return guard.res;
 
   const { id } = await params;
   const taskId = Number(id);
+  const guard = await requireTaskEditor(taskId);
+  if ("res" in guard) return guard.res;
 
   let body: unknown;
   try {

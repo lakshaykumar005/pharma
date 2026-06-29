@@ -94,7 +94,7 @@ export function WorkstreamCard({
       </ul>
 
       <Link
-        href={`/task/${tasks[0].id}`}
+        href={`/phase/${encodeURIComponent(phase.code)}`}
         className="mono-label mt-4 inline-flex items-center gap-2 text-brand-bright transition-colors hover:text-white"
       >
         Open workstream detail

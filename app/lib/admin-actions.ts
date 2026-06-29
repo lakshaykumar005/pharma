@@ -10,9 +10,13 @@ import {
   createMember,
   deleteMember,
   createUser,
-  setUserRole,
+  setUserAccess,
   deleteUser,
   updateProjectSettings,
+  createPhase,
+  updatePhase,
+  deletePhase,
+  reorderPhase,
 } from "./mutations";
 import { logActivity } from "./activity";
 import { notifyAssignment } from "./email";
@@ -24,6 +28,12 @@ const n = (fd: FormData, k: string) => Number(fd.get(k) ?? 0);
 function refresh() {
   revalidatePath("/manage");
   revalidatePath("/dashboard");
+}
+
+function refreshPhases() {
+  revalidatePath("/manage");
+  revalidatePath("/dashboard");
+  revalidatePath("/report");
 }
 
 function back(ok: string) {
@@ -142,6 +152,7 @@ export async function createUserAction(fd: FormData) {
       email: s(fd, "email"),
       name,
       role: role as Role,
+      department: s(fd, "department") || null,
       password: String(fd.get("password") ?? ""),
     });
   } catch (e) {
@@ -152,15 +163,15 @@ export async function createUserAction(fd: FormData) {
   back("User account created");
 }
 
-export async function setUserRoleAction(fd: FormData) {
+export async function setUserAccessAction(fd: FormData) {
   await ensureManager();
   try {
-    await setUserRole(n(fd, "id"), s(fd, "role") as Role);
+    await setUserAccess(n(fd, "id"), s(fd, "role") as Role, s(fd, "department") || null);
   } catch (e) {
-    fail(e instanceof Error ? e.message : "Could not change role");
+    fail(e instanceof Error ? e.message : "Could not update access");
   }
   refresh();
-  back("Role updated");
+  back("Access updated");
 }
 
 export async function deleteUserAction(fd: FormData) {
@@ -194,4 +205,66 @@ export async function updateProjectAction(fd: FormData) {
   }
   refresh();
   back("Project settings saved");
+}
+
+/* ------------------------------- phases ---------------------------------- */
+
+export async function createPhaseAction(fd: FormData) {
+  const u = await ensureManager();
+  const name = s(fd, "name");
+  try {
+    await createPhase({
+      code: s(fd, "code"),
+      name,
+      subtitle: s(fd, "subtitle"),
+      startDate: s(fd, "startDate"),
+      endDate: s(fd, "endDate"),
+    });
+  } catch (e) {
+    fail(e instanceof Error ? e.message : "Could not create phase");
+  }
+  await logActivity({ actor: u.name, verb: "added phase", target: name });
+  refreshPhases();
+  back("Phase created");
+}
+
+export async function updatePhaseAction(fd: FormData) {
+  const u = await ensureManager();
+  const code = s(fd, "code");
+  try {
+    const r = await updatePhase(code, {
+      name: s(fd, "name"),
+      subtitle: s(fd, "subtitle"),
+      startDate: s(fd, "startDate"),
+      endDate: s(fd, "endDate"),
+    });
+    await logActivity({ actor: u.name, verb: "updated phase", target: r.name });
+  } catch (e) {
+    fail(e instanceof Error ? e.message : "Could not update phase");
+  }
+  refreshPhases();
+  back("Phase updated");
+}
+
+export async function deletePhaseAction(fd: FormData) {
+  const u = await ensureManager();
+  try {
+    const r = await deletePhase(s(fd, "code"));
+    await logActivity({ actor: u.name, verb: "removed phase", target: r.name });
+  } catch (e) {
+    fail(e instanceof Error ? e.message : "Could not delete phase");
+  }
+  refreshPhases();
+  back("Phase deleted");
+}
+
+export async function movePhaseAction(fd: FormData) {
+  await ensureManager();
+  try {
+    await reorderPhase(s(fd, "code"), s(fd, "dir") === "up" ? "up" : "down");
+  } catch (e) {
+    fail(e instanceof Error ? e.message : "Could not reorder phase");
+  }
+  refreshPhases();
+  back("Phase order updated");
 }

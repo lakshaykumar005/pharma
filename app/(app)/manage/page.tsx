@@ -15,9 +15,13 @@ import {
   createMemberAction,
   deleteMemberAction,
   createUserAction,
-  setUserRoleAction,
+  setUserAccessAction,
   deleteUserAction,
   updateProjectAction,
+  createPhaseAction,
+  updatePhaseAction,
+  deletePhaseAction,
+  movePhaseAction,
 } from "@/app/lib/admin-actions";
 import { fmtShort } from "@/app/lib/helpers";
 
@@ -74,8 +78,103 @@ export default async function ManagePage({
         </div>
       )}
 
-      {/* ============================ TASKS ============================ */}
+      {/* ============================ PHASES ============================ */}
       <section className="mt-8">
+        <h2 className="text-lg font-semibold text-ink">Phases &amp; plan</h2>
+        <p className="mt-1 text-xs text-mute">
+          Workstreams that organise the whole programme — the Gantt, plan board and tasks all group by phase.
+        </p>
+
+        {/* create phase */}
+        <form action={createPhaseAction} className="card mt-3 grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-6">
+          <div className="lg:col-span-1">
+            <label className={label}>Code</label>
+            <input name="code" required placeholder="PH-04" className={input} />
+          </div>
+          <div className="sm:col-span-1 lg:col-span-2">
+            <label className={label}>Phase name</label>
+            <input name="name" required placeholder="e.g. Sludge Handling" className={input} />
+          </div>
+          <div className="sm:col-span-2 lg:col-span-3">
+            <label className={label}>Milestone label</label>
+            <input name="subtitle" placeholder="e.g. Sludge line commissioned" className={input} />
+          </div>
+          <div className="lg:col-span-2">
+            <label className={label}>Start</label>
+            <input name="startDate" type="date" required defaultValue={project.start} className={input} />
+          </div>
+          <div className="lg:col-span-2">
+            <label className={label}>End</label>
+            <input name="endDate" type="date" required defaultValue={project.end} className={input} />
+          </div>
+          <div className="flex items-end lg:col-span-2">
+            <button type="submit" className={primaryBtn}>+ Add phase</button>
+          </div>
+        </form>
+
+        {/* phase list */}
+        <div className="card mt-3 divide-y divide-black/8 p-0">
+          {phases.map((p, i) => {
+            const tcount = p.tasks.filter((t) => t.type === "T").length;
+            return (
+              <div key={p.code} className="px-4 py-3">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="font-mono text-[0.62rem] text-brand-bright">{p.code}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-ink">{p.name}</span>
+                    <span className="block truncate text-xs text-mute">
+                      ◆ {p.subtitle} · {fmtShort(p.start)}–{fmtShort(p.end)} · {tcount} task{tcount === 1 ? "" : "s"}
+                    </span>
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <span className="h-1.5 w-24 overflow-hidden rounded-full bg-black/8">
+                      <span className="block h-full rounded-full bg-brand" style={{ width: `${p.pct}%` }} />
+                    </span>
+                    <span className="w-9 text-right font-mono text-xs text-ink">{p.pct}%</span>
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <form action={movePhaseAction}>
+                      <input type="hidden" name="code" value={p.code} />
+                      <input type="hidden" name="dir" value="up" />
+                      <button className={ghostBtn} type="submit" aria-label="Move up" disabled={i === 0}>↑</button>
+                    </form>
+                    <form action={movePhaseAction}>
+                      <input type="hidden" name="code" value={p.code} />
+                      <input type="hidden" name="dir" value="down" />
+                      <button className={ghostBtn} type="submit" aria-label="Move down" disabled={i === phases.length - 1}>↓</button>
+                    </form>
+                    <form action={deletePhaseAction}>
+                      <input type="hidden" name="code" value={p.code} />
+                      <button className="rounded-lg px-2 py-1 text-xs text-faint transition-colors hover:text-brand" type="submit" title={tcount ? "Move its tasks out first" : "Delete phase"}>
+                        Delete
+                      </button>
+                    </form>
+                  </span>
+                </div>
+                {/* inline edit */}
+                <details className="group mt-2">
+                  <summary className="mono-label inline-flex cursor-pointer select-none items-center gap-1 text-[0.55rem] text-faint hover:text-brand">
+                    Edit phase
+                  </summary>
+                  <form action={updatePhaseAction} className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                    <input type="hidden" name="code" value={p.code} />
+                    <input name="name" defaultValue={p.name} className={`${input} lg:col-span-2`} />
+                    <input name="subtitle" defaultValue={p.subtitle} className={`${input} lg:col-span-3`} />
+                    <input name="startDate" type="date" defaultValue={p.start} className={input} />
+                    <input name="endDate" type="date" defaultValue={p.end} className={input} />
+                    <div className="flex items-end">
+                      <button className={primaryBtn} type="submit">Save phase</button>
+                    </div>
+                  </form>
+                </details>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ============================ TASKS ============================ */}
+      <section className="mt-12">
         <h2 className="text-lg font-semibold text-ink">Tasks &amp; assignments</h2>
 
         {/* create */}
@@ -247,9 +346,13 @@ export default async function ManagePage({
       {isAdmin && (
         <section className="mt-12">
           <h2 className="text-lg font-semibold text-ink">Access &amp; accounts</h2>
-          <p className="mt-1 text-xs text-mute">Create logins for the team. Roles: ADMIN/EDITOR can edit, VIEWER is read-only.</p>
-          <form action={createUserAction} className="card mt-3 grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
+          <p className="mt-1 text-xs text-mute">
+            Roles: <b>ADMIN</b> = Manager (full control), <b>EDITOR</b> = Engineer (works on their own
+            department&apos;s tasks), <b>VIEWER</b> = Client (read-only). Department ties an engineer to a
+            functional role from the Gantt.
+          </p>
+          <form action={createUserAction} className="card mt-3 grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-6">
+            <div className="lg:col-span-2">
               <label className={label}>Email</label>
               <input name="email" type="email" required placeholder="name@anthem.local" className={input} />
             </div>
@@ -260,18 +363,29 @@ export default async function ManagePage({
             <div>
               <label className={label}>Role</label>
               <select name="role" required defaultValue="VIEWER" className={input}>
-                <option value="ADMIN">ADMIN</option>
-                <option value="EDITOR">EDITOR</option>
-                <option value="VIEWER">VIEWER</option>
+                <option value="ADMIN">ADMIN · Manager</option>
+                <option value="EDITOR">EDITOR · Engineer</option>
+                <option value="VIEWER">VIEWER · Client</option>
               </select>
             </div>
-            <div className="flex items-end gap-3">
-              <div className="flex-1">
-                <label className={label}>Temp password</label>
-                <input name="password" type="text" required minLength={6} placeholder="min 6 chars" className={input} />
-              </div>
+            <div>
+              <label className={label}>Department</label>
+              <select name="department" defaultValue="" className={input}>
+                <option value="">— none —</option>
+                {departments.map((d) => (
+                  <option key={d.code} value={d.code}>
+                    {d.code} · {d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={label}>Temp password</label>
+              <input name="password" type="text" required minLength={6} placeholder="min 6 chars" className={input} />
+            </div>
+            <div className="flex items-end lg:col-span-6">
               <button type="submit" className={primaryBtn}>
-                + Create
+                + Create account
               </button>
             </div>
           </form>
@@ -280,17 +394,32 @@ export default async function ManagePage({
             {users.map((u) => (
               <div key={u.id} className="flex flex-wrap items-center gap-3 px-4 py-2.5">
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium text-ink">{u.name}</span>
+                  <span className="block truncate text-sm font-medium text-ink">
+                    {u.name}
+                    {u.department && (
+                      <span className="ml-2 rounded bg-black/8 px-1.5 py-0.5 font-mono text-[0.5rem] uppercase tracking-widest text-mute">
+                        {u.department}
+                      </span>
+                    )}
+                  </span>
                   <span className="block truncate text-xs text-mute">
                     {u.email} · joined {fmtShort(u.createdAt)}
                   </span>
                 </span>
-                <form action={setUserRoleAction} className="flex items-center gap-1.5">
+                <form action={setUserAccessAction} className="flex items-center gap-1.5">
                   <input type="hidden" name="id" value={u.id} />
                   <select name="role" defaultValue={u.role} className="rounded-md border border-black/12 bg-black/[0.03] px-2 py-1 text-xs text-ink">
                     <option value="ADMIN">ADMIN</option>
                     <option value="EDITOR">EDITOR</option>
                     <option value="VIEWER">VIEWER</option>
+                  </select>
+                  <select name="department" defaultValue={u.department ?? ""} className="rounded-md border border-black/12 bg-black/[0.03] px-2 py-1 text-xs text-ink">
+                    <option value="">— dept —</option>
+                    {departments.map((d) => (
+                      <option key={d.code} value={d.code}>
+                        {d.code}
+                      </option>
+                    ))}
                   </select>
                   <button className={ghostBtn} type="submit">
                     Update

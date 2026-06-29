@@ -7,14 +7,20 @@ import {
   signSession,
   verifySession,
 } from "./session";
-import type { Role, SessionUser } from "./types";
+import type { Role, RoleCode, SessionUser, Task } from "./types";
 
 /** Read + verify the current session from the cookie. Null if not signed in. */
 export async function getCurrentUser(): Promise<SessionUser | null> {
   const store = await cookies();
   const data = verifySession(store.get(SESSION_COOKIE)?.value);
   if (!data) return null;
-  return { uid: data.uid, email: data.email, name: data.name, role: data.role };
+  return {
+    uid: data.uid,
+    email: data.email,
+    name: data.name,
+    role: data.role,
+    department: data.department ?? null,
+  };
 }
 
 export async function setSessionCookie(user: SessionUser): Promise<void> {
@@ -47,6 +53,19 @@ export function canManage(role: Role | undefined | null): boolean {
 /** Human label for a role, from the manager/developer/client perspective. */
 export function roleLabel(role: Role): string {
   return role === "ADMIN" ? "Manager" : role === "EDITOR" ? "Engineer" : "Client";
+}
+
+/** Can this user *do the work* on a specific task?
+    Managers can act on anything. Engineers can act only on tasks assigned to them
+    OR belonging to their own department. Clients never can. */
+export function canEditTask(
+  user: { role: Role; name: string; department?: RoleCode | null } | null | undefined,
+  task: Pick<Task, "owner" | "role">,
+): boolean {
+  if (!user) return false;
+  if (user.role === "ADMIN") return true;
+  if (user.role !== "EDITOR") return false;
+  return task.owner === user.name || (!!user.department && task.role === user.department);
 }
 
 /** Gate a page server component: redirect to /login when unauthenticated. */

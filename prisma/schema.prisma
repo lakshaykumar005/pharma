@@ -133,6 +133,7 @@ model User {
   name         String
   passwordHash String
   role         String   @default("VIEWER")
+  department   String? // functional role code (DES/PRO/A&P/SER/SIM); null for clients
   createdAt    DateTime @default(now())
 }
 

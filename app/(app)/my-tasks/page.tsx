@@ -4,6 +4,7 @@ import { getProject, getAllTasks } from "@/app/lib/queries";
 import { StatusBoard } from "@/app/components/StatusBoard";
 import { ProgressRing } from "@/app/components/ProgressRing";
 import { overallProgress } from "@/app/lib/helpers";
+import { DEPARTMENT_NAMES } from "@/app/lib/types";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "My work — Command Center" };
@@ -13,7 +14,13 @@ export default async function MyTasksPage() {
   if (!canEdit(user.role)) redirect("/dashboard"); // clients have no assignments
 
   const [project, all] = await Promise.all([getProject(), getAllTasks()]);
-  const mine = all.filter((t) => t.type === "T" && t.owner === user.name);
+  // Everything this engineer can act on: assigned to them OR in their department.
+  const mine = all.filter(
+    (t) =>
+      t.type === "T" &&
+      (t.owner === user.name || (!!user.department && t.role === user.department)),
+  );
+  const deptName = user.department ? DEPARTMENT_NAMES[user.department] : null;
   const done = mine.filter((t) => t.pct >= 100).length;
   const pct = overallProgress(mine);
 
@@ -22,12 +29,13 @@ export default async function MyTasksPage() {
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div>
           <span className="mono-label text-brand-bright">
-            {roleLabel(user.role)} · {user.name}
+            {roleLabel(user.role)}
+            {deptName ? ` · ${deptName}` : ""} · {user.name}
           </span>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">My work</h1>
           <p className="mt-2 text-sm text-mute">
             {mine.length
-              ? `${mine.length} task${mine.length === 1 ? "" : "s"} assigned to you · ${done} done`
+              ? `${mine.length} task${mine.length === 1 ? "" : "s"} you own or ${deptName ? `in ${deptName}` : "in your department"} · ${done} done`
               : "Nothing is assigned to you yet."}
           </p>
         </div>

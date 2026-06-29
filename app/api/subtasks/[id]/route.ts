@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { setSubtaskDone, deleteSubtask } from "@/app/lib/mutations";
 import { logActivity } from "@/app/lib/activity";
-import { checkOrigin, requireEditor } from "@/app/lib/api-guard";
+import { checkOrigin, requireSubtaskEditor } from "@/app/lib/api-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -10,10 +10,11 @@ export const dynamic = "force-dynamic";
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const origin = checkOrigin(req);
   if (origin) return origin;
-  const guard = await requireEditor();
-  if ("res" in guard) return guard.res;
 
   const { id } = await params;
+  const guard = await requireSubtaskEditor(Number(id));
+  if ("res" in guard) return guard.res;
+
   let body: unknown;
   try {
     body = await req.json();
@@ -46,10 +47,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const origin = checkOrigin(req);
   if (origin) return origin;
-  const guard = await requireEditor();
-  if ("res" in guard) return guard.res;
 
   const { id } = await params;
+  const guard = await requireSubtaskEditor(Number(id));
+  if ("res" in guard) return guard.res;
+
   try {
     const result = await deleteSubtask(Number(id));
     revalidatePath(`/task/${result.taskId}`);

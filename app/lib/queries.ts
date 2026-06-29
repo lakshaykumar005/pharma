@@ -222,6 +222,7 @@ export interface UserRow {
   email: string;
   name: string;
   role: string;
+  department: string | null;
   createdAt: string;
 }
 
@@ -232,6 +233,7 @@ export async function getUsers(): Promise<UserRow[]> {
     email: u.email,
     name: u.name,
     role: u.role,
+    department: u.department ?? null,
     createdAt: u.createdAt.toISOString().slice(0, 10),
   }));
 }

@@ -5,7 +5,7 @@ import { prisma } from "./db";
 import { verifyPassword } from "./password";
 import { setSessionCookie, clearSessionCookie, getCurrentUser } from "./auth";
 import { changePassword } from "./mutations";
-import type { Role } from "./types";
+import type { Role, RoleCode } from "./types";
 
 export interface LoginState {
   error?: string;
@@ -55,6 +55,7 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
     email: user.email,
     name: user.name,
     role: user.role as Role,
+    department: (user.department as RoleCode) ?? null,
   });
   redirect(dest);
 }

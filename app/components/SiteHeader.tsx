@@ -149,6 +149,7 @@ export function SiteHeader({
                   </span>
                   <span className="block font-mono text-[0.55rem] uppercase tracking-widest text-faint">
                     {user.role}
+                    {user.department ? ` · ${user.department}` : ""}
                   </span>
                 </span>
               </Link>
@@ -253,6 +254,7 @@ export function SiteHeader({
                   <span className="block text-sm font-semibold text-ink">{user.name}</span>
                   <span className="block font-mono text-[0.55rem] uppercase tracking-widest text-faint">
                     {user.role}
+                    {user.department ? ` · ${user.department}` : ""}
                   </span>
                 </span>
               </span>

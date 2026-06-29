@@ -9,11 +9,22 @@ export type TaskState = "ACTIVE" | "BLOCKED" | "ON_HOLD";
 /** Auth roles. ADMIN/EDITOR can write; VIEWER is read-only. */
 export type Role = "ADMIN" | "EDITOR" | "VIEWER";
 
+/** Display names for the functional roles (departments) used in the Gantt. */
+export const DEPARTMENT_NAMES: Record<RoleCode, string> = {
+  DES: "Design",
+  PRO: "Project",
+  "A&P": "Accounts & Purchase",
+  SER: "Service",
+  SIM: "Simulation",
+};
+
 export interface SessionUser {
   uid: number;
   email: string;
   name: string;
   role: Role;
+  /** Functional role code (DES/PRO/…); null for clients/managers without one. */
+  department?: RoleCode | null;
 }
 
 export interface ProjectMeta {
