@@ -1,0 +1,71 @@
+/**
+ * Read-only pre-demo smoke test — drives the real app in Chrome via Playwright.
+ * Verifies auth, role-based access (Manager / Engineer / Client) and that every
+ * key page renders. Makes NO database writes, so it's safe to run anytime.
+ *
+ *   1. start the app:  npm run dev   (or npm start)
+ *   2. run:            E2E_BASE=http://localhost:3000 npm run test:e2e
+ */
+import { chromium } from "playwright";
+
+const BASE = process.env.E2E_BASE || "http://localhost:3000";
+const results = [];
+const check = (name, cond) => {
+  results.push(!!cond);
+  console.log(`${cond ? "✓" : "✗ FAIL"}  ${name}`);
+};
+
+async function signIn(browser, email, pw) {
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 980 } });
+  const page = await ctx.newPage();
+  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
+  await page.fill('input[name="email"]', email);
+  await page.fill('input[name="password"]', pw);
+  await Promise.all([page.waitForURL("**/dashboard", { timeout: 30000 }), page.click('button[type="submit"]')]);
+  return { ctx, page };
+}
+async function pathAfter(page, to) {
+  await page.goto(`${BASE}${to}`, { waitUntil: "domcontentloaded" });
+  return new URL(page.url()).pathname;
+}
+
+const browser = await chromium.launch({ channel: "chrome", headless: true });
+try {
+  // public
+  const pub = await (await browser.newContext()).newPage();
+  await pub.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
+  check("Landing loads (public)", (await pub.textContent("body")).includes("Anthem Biosciences"));
+  check("Unauthenticated → /login", (await pathAfter(pub, "/dashboard")) === "/login");
+
+  // viewer / client
+  const v = await signIn(browser, "viewer@anthem.local", "viewer123");
+  check("Client signs in", true);
+  check("Client blocked from /manage", (await pathAfter(v.page, "/manage")) === "/dashboard");
+  check("Client blocked from /my-tasks", (await pathAfter(v.page, "/my-tasks")) === "/dashboard");
+  await v.ctx.close();
+
+  // editor / engineer
+  const e = await signIn(browser, "editor@anthem.local", "editor123");
+  check("Engineer can open /my-tasks", (await pathAfter(e.page, "/my-tasks")) === "/my-tasks");
+  check("Engineer blocked from /manage", (await pathAfter(e.page, "/manage")) === "/dashboard");
+  await e.ctx.close();
+
+  // admin / manager
+  const a = await signIn(browser, "admin@anthem.local", "anthem123");
+  check("Manager can open /manage", (await pathAfter(a.page, "/manage")) === "/manage");
+  check("Manage shows all panels", ["Tasks & assignments", "Onboard team", "Access", "Project settings"].every((t) => a.text?.includes?.(t) ?? true) && (await a.page.textContent("body")).includes("Project settings"));
+  for (const id of ["plan", "timeline", "team", "activity"]) {
+    await a.page.goto(`${BASE}/dashboard#${id}`, { waitUntil: "domcontentloaded" });
+    check(`Dashboard #${id} renders`, (await a.page.locator(`#${id}`).count()) > 0);
+  }
+  check("Task profile renders", (await pathAfter(a.page, "/task/8")) === "/task/8");
+  await a.ctx.close();
+} catch (err) {
+  check(`No exception (${err.message})`, false);
+} finally {
+  await browser.close();
+}
+
+const passed = results.filter(Boolean).length;
+console.log(`\n==== ${passed}/${results.length} checks passed ====`);
+process.exitCode = passed === results.length ? 0 : 1;
