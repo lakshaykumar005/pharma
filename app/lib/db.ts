@@ -1,14 +1,17 @@
 import { PrismaClient } from "@/app/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 /**
- * Prisma 7 uses a driver adapter. For local dev this is better-sqlite3; for
- * production swap the adapter (e.g. @prisma/adapter-neon) and the DATABASE_URL.
+ * Prisma 7 uses a driver adapter. We connect to Supabase Postgres over the
+ * pooled connection (DATABASE_URL — Supavisor / pgbouncer) at runtime.
+ * Migrations + seeding use the direct connection (DIRECT_URL) instead.
  */
 function createClient() {
-  const adapter = new PrismaBetterSqlite3({
-    url: process.env.DATABASE_URL ?? "file:./dev.db",
-  });
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is not set — add your Supabase pooled connection string to .env");
+  }
+  const adapter = new PrismaPg({ connectionString });
   return new PrismaClient({ adapter });
 }
 

@@ -5,37 +5,43 @@ A live, database-backed status dashboard for the **Anthem Biosciences Limited** 
 Solutions**. Tracks three engineering lines — Demo-Plant & Sensors, SCADA Automation,
 Membrane Skid — through procurement, delivery, installation and commissioning.
 
-Palette: **black · white · red**. Fully responsive (mobile + desktop).
+Palette: **white · black · red** (light theme). Fully responsive (mobile + desktop).
 
 ## Stack
 
 - **Next.js 16** (App Router, Turbopack) + **React 19**
 - **Tailwind CSS v4** (CSS-first `@theme`)
-- **Prisma 7** ORM with a **SQLite** database (better-sqlite3 driver adapter)
+- **Prisma 7** ORM on **Supabase Postgres** (`@prisma/adapter-pg` driver adapter)
 - All data pages are **server-rendered on demand** from the database — no static data.
 
-## Setup
+## Setup (Supabase)
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. In the Supabase dashboard click **Connect → ORMs (Prisma)** and copy the two
+   connection strings into `.env` (template in `.env.example`):
+   - `DATABASE_URL` — pooled (port 6543, `?pgbouncer=true`) → used at runtime
+   - `DIRECT_URL` — direct (port 5432) → used for migrations + seeding
+3. Generate an auth secret: `openssl rand -hex 32` → put it in `AUTH_SECRET`.
+4. Create the tables and seed:
 
 ```bash
 npm install            # also runs `prisma generate`
-npm run db:migrate     # create the SQLite DB + schema  (first time)
-npm run db:seed        # load the real Gantt data
+npm run db:push        # create all tables in Supabase (or run prisma/supabase-schema.sql)
+npm run db:seed        # load users, departments, phases, tasks, subtasks
 npm run dev            # http://localhost:3000
 ```
 
-Environment lives in `.env` (see `.env.example`):
-
-```
-DATABASE_URL="file:./dev.db"
-```
+> Prefer SQL? Paste [`prisma/supabase-schema.sql`](prisma/supabase-schema.sql) into the
+> Supabase **SQL Editor** instead of `db:push`, then run `npm run db:seed`.
 
 ## Scripts
 
 | Script | Purpose |
 | --- | --- |
 | `npm run dev` / `build` / `start` | Next.js dev / production build / serve |
-| `npm run db:migrate` | Create/apply migrations (dev) |
+| `npm run db:push` | Push the Prisma schema to Supabase (creates tables) |
 | `npm run db:seed` | Seed the database from the project plan |
+| `npm run db:migrate` | Create/apply a migration (dev, uses `DIRECT_URL`) |
 | `npm run db:reset` | Drop, re-migrate and re-seed |
 | `npm run db:studio` | Open Prisma Studio to browse/edit data |
 
@@ -57,12 +63,12 @@ percentage is recomputed (work-day weighted) in a single transaction.
 (predecessor edges, FS/FF). Defined in [`prisma/schema.prisma`](prisma/schema.prisma),
 seeded in [`prisma/seed.ts`](prisma/seed.ts) from the real Gantt figures.
 
-## Deploying to production
+## Deploying to Vercel
 
-SQLite is for local development. For Vercel, provision a managed Postgres
-(e.g. Neon via the Vercel Marketplace), then:
+The same Supabase database works locally and in production.
 
-1. Change the datasource `provider` to `postgresql` in `prisma/schema.prisma`.
-2. Swap the driver adapter in [`app/lib/db.ts`](app/lib/db.ts) (e.g. `@prisma/adapter-neon`).
-3. Set `DATABASE_URL` to the Postgres connection string in the Vercel project env.
-4. Run `prisma migrate deploy` + seed.
+1. Add `DATABASE_URL`, `DIRECT_URL` and `AUTH_SECRET` to the Vercel project's
+   Environment Variables (use the Supabase pooled URL for `DATABASE_URL`).
+2. Deploy — `prisma generate` runs on install, and pages connect to Supabase at
+   request time over the pooled connection.
+3. Tables/seed are managed against Supabase via `db:push` + `db:seed` (run once).

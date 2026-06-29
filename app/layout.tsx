@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Mono, Bebas_Neue } from "next/font/google";
 import "./globals.css";
-import { getProject } from "./lib/queries";
 
 const plexSans = IBM_Plex_Sans({
   variable: "--font-plex-sans",
@@ -21,13 +20,10 @@ const bebas = Bebas_Neue({
   weight: "400",
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const p = await getProject();
-  return {
-    title: `${p.client} — Project Command Center`,
-    description: `${p.programme} programme status, tracked live by ${p.builder}.`,
-  };
-}
+export const metadata: Metadata = {
+  title: "Anthem Biosciences Limited — Project Command Center",
+  description: "ETP Demonstration programme status, tracked live by Aapaavani Environmental Solutions.",
+};
 
 export const viewport: Viewport = {
   themeColor: "#0a0a0c",
