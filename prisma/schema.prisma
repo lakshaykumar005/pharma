@@ -143,6 +143,17 @@ model User {
   createdAt    DateTime @default(now())
 }
 
+/// Per-user assistant conversation history — the chatbot's memory across sessions.
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  role      String // "user" | "assistant"
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
 /// Predecessor edges (Finish-to-Start / Finish-to-Finish chain).
 model Dependency {
   id          Int  @id @default(autoincrement())

@@ -119,6 +119,10 @@ try {
   await shot(a.page, "qa-account");
   const csv = await a.page.request.get(`${BASE}/api/export/tasks`);
   check("CSV export downloads", csv.ok() && (csv.headers()["content-type"] || "").toLowerCase().includes("csv"));
+  // AI assistant: history endpoint authed + launcher present
+  check("Assistant history endpoint (200)", (await a.page.request.get(`${BASE}/api/chat`)).status() === 200);
+  await a.page.goto(`${BASE}/dashboard`, { waitUntil: "domcontentloaded" });
+  check("Assistant launcher present", (await a.page.locator('button[aria-label="Open assistant"]').count()) === 1);
   await a.ctx.close();
 } catch (err) {
   check(`No exception (${err.message})`, false);

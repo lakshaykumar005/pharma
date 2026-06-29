@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { SiteFooter } from "@/app/components/SiteFooter";
+import { Assistant } from "@/app/components/Assistant";
 import { getProject, getAllTasks } from "@/app/lib/queries";
 import { requireUser } from "@/app/lib/auth";
 import { fmtShort, computeAlerts, computeSignoffs } from "@/app/lib/helpers";
@@ -28,6 +29,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <SiteHeader asOf={fmtShort(project.asOf)} user={user} alertCount={alertCount} />
       <main className="flex-1">{children}</main>
       <SiteFooter project={project} />
+      <Assistant name={user.name} role={user.role} />
     </>
   );
 }
