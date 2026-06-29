@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { requireUser, canEdit } from "@/app/lib/auth";
+import { requireUser, canManage } from "@/app/lib/auth";
 import {
   getProject,
   getPhases,
@@ -38,8 +38,8 @@ export default async function ManagePage({
   searchParams: Promise<{ ok?: string; error?: string }>;
 }) {
   const user = await requireUser("/manage");
-  if (!canEdit(user.role)) redirect("/dashboard");
-  const isAdmin = user.role === "ADMIN";
+  if (!canManage(user.role)) redirect("/dashboard");
+  const isAdmin = true; // manager-only page
 
   const [project, phases, departments, team, tasks, users, sp] = await Promise.all([
     getProject(),

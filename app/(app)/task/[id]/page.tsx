@@ -9,6 +9,7 @@ import { RoleBadge } from "@/app/components/RoleBadge";
 import { StatusBadge } from "@/app/components/StatusBadge";
 import { ProgressControl } from "@/app/components/ProgressControl";
 import { Subtasks } from "@/app/components/Subtasks";
+import { Comments } from "@/app/components/Comments";
 
 export const dynamic = "force-dynamic";
 
@@ -170,6 +171,17 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
           <Subtasks taskId={task.id} initial={task.subtasks} canEdit={canEdit(user.role)} />
         </div>
       )}
+
+      {/* discussion */}
+      <div className="mt-5">
+        <Comments
+          taskId={task.id}
+          initial={detail.comments}
+          canComment={canEdit(user.role)}
+          meName={user.name}
+          meRole={user.role}
+        />
+      </div>
 
       {/* prev / next */}
       <nav className="mt-8 grid gap-3 sm:grid-cols-2">

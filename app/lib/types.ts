@@ -80,6 +80,14 @@ export interface Phase {
   tasks: Task[];
 }
 
+export interface TaskComment {
+  id: number;
+  author: string;
+  role: string;
+  body: string;
+  createdAt: string;
+}
+
 export interface TaskDetail {
   task: Task;
   phase: Phase;
@@ -88,6 +96,7 @@ export interface TaskDetail {
   successors: Task[];
   prev: Task | null;
   next: Task | null;
+  comments: TaskComment[];
 }
 
 export interface Snapshot {

@@ -84,7 +84,21 @@ model Task {
   predecessors  Dependency[] @relation("TaskPredecessors")
   dependents    Dependency[] @relation("TaskDependents")
   subtasks      Subtask[]
+  comments      Comment[]
   updatedAt     DateTime     @updatedAt
+}
+
+/// Discussion / notes on a task (engineers + managers).
+model Comment {
+  id        Int      @id @default(autoincrement())
+  taskId    Int
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author    String
+  role      String
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([taskId])
 }
 
 /// Checklist items under a task. Completing them drives the task's progress.

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getCurrentUser, canEdit } from "./auth";
+import { getCurrentUser, canManage } from "./auth";
 import {
   createTask,
   updateTask,
@@ -32,21 +32,18 @@ function fail(msg: string): never {
   redirect(`/manage?error=${encodeURIComponent(msg)}`);
 }
 
-async function ensureEditor() {
+// All /manage operations are manager-only (ADMIN). Engineers (EDITOR) execute
+// task work — progress, subtasks, comments — but don't manage the programme.
+async function ensureManager() {
   const u = await getCurrentUser();
-  if (!u || !canEdit(u.role)) fail("Editor access required");
-  return u!;
-}
-async function ensureAdmin() {
-  const u = await getCurrentUser();
-  if (!u || u.role !== "ADMIN") fail("Admin access required");
+  if (!u || !canManage(u.role)) fail("Manager access required");
   return u!;
 }
 
 /* ------------------------------- tasks ----------------------------------- */
 
 export async function createTaskAction(fd: FormData) {
-  const u = await ensureEditor();
+  const u = await ensureManager();
   const desc = s(fd, "description");
   const owner = s(fd, "owner");
   try {
@@ -69,7 +66,7 @@ export async function createTaskAction(fd: FormData) {
 }
 
 export async function updateTaskAction(fd: FormData) {
-  const u = await ensureEditor();
+  const u = await ensureManager();
   const id = n(fd, "id");
   const owner = s(fd, "owner");
   try {
@@ -89,7 +86,7 @@ export async function updateTaskAction(fd: FormData) {
 }
 
 export async function deleteTaskAction(fd: FormData) {
-  const u = await ensureEditor();
+  const u = await ensureManager();
   try {
     const r = await deleteTask(n(fd, "id"));
     await logActivity({ actor: u.name, verb: "removed task", target: r.desc });
@@ -103,7 +100,7 @@ export async function deleteTaskAction(fd: FormData) {
 /* ------------------------------- team ------------------------------------ */
 
 export async function createMemberAction(fd: FormData) {
-  const u = await ensureEditor();
+  const u = await ensureManager();
   const name = s(fd, "name");
   try {
     await createMember({
@@ -121,7 +118,7 @@ export async function createMemberAction(fd: FormData) {
 }
 
 export async function deleteMemberAction(fd: FormData) {
-  await ensureEditor();
+  await ensureManager();
   try {
     await deleteMember(n(fd, "id"));
   } catch (e) {
@@ -134,7 +131,7 @@ export async function deleteMemberAction(fd: FormData) {
 /* ------------------------------- users ----------------------------------- */
 
 export async function createUserAction(fd: FormData) {
-  const u = await ensureAdmin();
+  const u = await ensureManager();
   const name = s(fd, "name");
   const role = s(fd, "role");
   try {
@@ -153,7 +150,7 @@ export async function createUserAction(fd: FormData) {
 }
 
 export async function setUserRoleAction(fd: FormData) {
-  await ensureAdmin();
+  await ensureManager();
   try {
     await setUserRole(n(fd, "id"), s(fd, "role") as Role);
   } catch (e) {
@@ -164,7 +161,7 @@ export async function setUserRoleAction(fd: FormData) {
 }
 
 export async function deleteUserAction(fd: FormData) {
-  const me = await ensureAdmin();
+  const me = await ensureManager();
   try {
     await deleteUser(n(fd, "id"), me.uid);
   } catch (e) {
@@ -177,7 +174,7 @@ export async function deleteUserAction(fd: FormData) {
 /* ------------------------------ project ---------------------------------- */
 
 export async function updateProjectAction(fd: FormData) {
-  await ensureAdmin();
+  await ensureManager();
   try {
     await updateProjectSettings({
       client: s(fd, "client"),

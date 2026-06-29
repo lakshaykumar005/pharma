@@ -90,6 +90,14 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
               ))}
               {(user.role === "ADMIN" || user.role === "EDITOR") && (
                 <Link
+                  href="/my-tasks"
+                  className="rounded-full px-3.5 py-2 text-sm font-medium text-mute transition-colors hover:text-brand"
+                >
+                  My work
+                </Link>
+              )}
+              {user.role === "ADMIN" && (
+                <Link
                   href="/manage"
                   className="rounded-full px-3.5 py-2 text-sm font-medium text-mute transition-colors hover:text-brand"
                 >
@@ -166,6 +174,15 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
               </Link>
             ))}
             {(user.role === "ADMIN" || user.role === "EDITOR") && (
+              <Link
+                href="/my-tasks"
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-3 text-base font-medium text-mute"
+              >
+                My work
+              </Link>
+            )}
+            {user.role === "ADMIN" && (
               <Link
                 href="/manage"
                 onClick={() => setOpen(false)}

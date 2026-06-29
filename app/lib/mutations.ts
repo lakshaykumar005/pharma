@@ -91,6 +91,18 @@ export async function deleteSubtask(id: number) {
   });
 }
 
+/** Add a comment / note to a task. */
+export async function addComment(taskId: number, author: string, role: string, body: string) {
+  const clean = body.trim();
+  if (!Number.isInteger(taskId)) throw new Error("Invalid task id");
+  if (!clean) throw new Error("Comment can't be empty");
+  if (clean.length > 1000) throw new Error("Comment too long");
+  const task = await prisma.task.findUnique({ where: { id: taskId } });
+  if (!task) throw new Error("Task not found");
+  const c = await prisma.comment.create({ data: { taskId, author, role, body: clean } });
+  return { id: c.id, createdAt: c.createdAt.toISOString(), taskDesc: task.description };
+}
+
 /* ============================================================================
    ADMIN / MANAGEMENT MUTATIONS — tasks, team, users, project
    ============================================================================ */

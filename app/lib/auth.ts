@@ -33,8 +33,20 @@ export async function clearSessionCookie(): Promise<void> {
   store.delete(SESSION_COOKIE);
 }
 
+/** Execute work on tasks — progress, subtasks, comments. Manager + Engineer. */
 export function canEdit(role: Role | undefined | null): boolean {
   return role === "ADMIN" || role === "EDITOR";
+}
+
+/** Manage the programme — create/assign tasks, onboard team, accounts, settings.
+    Manager only (ADMIN). Engineers (EDITOR) execute but don't manage. */
+export function canManage(role: Role | undefined | null): boolean {
+  return role === "ADMIN";
+}
+
+/** Human label for a role, from the manager/developer/client perspective. */
+export function roleLabel(role: Role): string {
+  return role === "ADMIN" ? "Manager" : role === "EDITOR" ? "Engineer" : "Client";
 }
 
 /** Gate a page server component: redirect to /login when unauthenticated. */

@@ -144,6 +144,7 @@ export async function getTaskDetail(id: number): Promise<TaskDetail | null> {
       ...taskInclude,
       dependents: { select: { taskId: true } },
       phase: true,
+      comments: { orderBy: { createdAt: "asc" } },
     },
   });
   if (!row) return null;
@@ -180,6 +181,13 @@ export async function getTaskDetail(id: number): Promise<TaskDetail | null> {
     successors,
     prev: all[idx - 1] ?? null,
     next: all[idx + 1] ?? null,
+    comments: row.comments.map((c) => ({
+      id: c.id,
+      author: c.author,
+      role: c.role,
+      body: c.body,
+      createdAt: c.createdAt.toISOString(),
+    })),
   };
 }
 
