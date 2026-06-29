@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { setSubtaskDone, deleteSubtask } from "@/app/lib/mutations";
+import { logActivity } from "@/app/lib/activity";
 import { checkOrigin, requireEditor } from "@/app/lib/api-guard";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +27,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   try {
     const result = await setSubtaskDone(Number(id), done);
+    await logActivity({
+      actor: guard.user.name,
+      verb: result.done ? "checked off" : "reopened",
+      target: result.title,
+      taskId: result.taskId,
+    });
     revalidatePath(`/task/${result.taskId}`);
     revalidatePath("/dashboard");
     return NextResponse.json({ ok: true, ...result });

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getTaskDetail } from "@/app/lib/queries";
 import { updateTaskProgress } from "@/app/lib/mutations";
+import { logActivity } from "@/app/lib/activity";
 import { checkOrigin, requireAuth, requireEditor } from "@/app/lib/api-guard";
 
 export const dynamic = "force-dynamic";
@@ -41,6 +42,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   try {
     const result = await updateTaskProgress(taskId, pct);
+    await logActivity({
+      actor: guard.user.name,
+      verb: result.pct >= 100 ? "completed" : "updated progress on",
+      target: result.desc,
+      detail: result.pct >= 100 ? undefined : `to ${result.pct}%`,
+      taskId,
+    });
     revalidatePath("/dashboard");
     revalidatePath(`/task/${taskId}`);
     return NextResponse.json({ ok: true, ...result });

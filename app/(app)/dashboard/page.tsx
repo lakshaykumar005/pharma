@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSnapshot } from "@/app/lib/queries";
+import { getActivity, type ActivityRow } from "@/app/lib/activity";
 import { type ProjectMeta, type Phase, type Department, type Member, type Task } from "@/app/lib/types";
 import {
   daysToGo,
@@ -20,20 +21,27 @@ import { RoleBadge } from "@/app/components/RoleBadge";
 import { SpotlightCard } from "@/app/components/ui/SpotlightCard";
 import { NumberTicker } from "@/app/components/ui/NumberTicker";
 import { TiltCard } from "@/app/components/ui/TiltCard";
+import { StatusBoard } from "@/app/components/StatusBoard";
+import { ActivityFeed } from "@/app/components/ActivityFeed";
 
 // Always render from the live database — no static snapshot.
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const { project, phases, departments, team } = await getSnapshot();
+  const [{ project, phases, departments, team }, activity] = await Promise.all([
+    getSnapshot(),
+    getActivity(14),
+  ]);
   const allTasks = phases.flatMap((p) => p.tasks);
 
   return (
     <div className="mx-auto max-w-[1240px] px-4 sm:px-6">
       <Hero project={project} tasks={allTasks} />
+      <PlanSection tasks={allTasks} asOf={project.asOf} />
       <Workstreams phases={phases} asOf={project.asOf} />
       <TimelineSection phases={phases} project={project} />
       <TeamSection departments={departments} team={team} />
+      <ActivitySection activity={activity} />
     </div>
   );
 }
@@ -157,13 +165,32 @@ function Tally({ n, label, tone }: { n: number; label: string; tone: "ink" | "br
   );
 }
 
+/* ----------------------------- PLAN / STATUS ----------------------------- */
+
+function PlanSection({ tasks, asOf }: { tasks: Task[]; asOf: string }) {
+  return (
+    <section id="plan" className="scroll-mt-24 pt-20">
+      <SectionHead
+        kicker="01 · Plan & progress"
+        title="Done, doing & up next"
+        desc="Every task bucketed by where it stands — with owners and deadlines — so you always know what's been delivered, what's in motion, and what's coming."
+      />
+      <Reveal>
+        <div className="mt-10">
+          <StatusBoard tasks={tasks} asOf={asOf} />
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
 /* --------------------------- WORKSTREAMS --------------------------------- */
 
 function Workstreams({ phases, asOf }: { phases: Phase[]; asOf: string }) {
   return (
     <section id="workstreams" className="scroll-mt-24 pt-20">
       <SectionHead
-        kicker="01 · Workstreams"
+        kicker="02 · Workstreams"
         title="The three engineering lines"
         desc="Each line runs procurement → delivery → installation → commissioning to its own milestone. Open any task for its full profile."
       />
@@ -186,7 +213,7 @@ function TimelineSection({ phases, project }: { phases: Phase[]; project: Projec
   return (
     <section id="timeline" className="scroll-mt-24 pt-20">
       <SectionHead
-        kicker="02 · Timeline"
+        kicker="03 · Timeline"
         title="Programme at a glance"
         desc="All tasks on one axis with planned windows, live progress and milestones. The red line marks today."
       />
@@ -205,7 +232,7 @@ function TeamSection({ departments, team }: { departments: Department[]; team: M
   return (
     <section id="team" className="scroll-mt-24 pt-20">
       <SectionHead
-        kicker="03 · Departments & Team"
+        kicker="04 · Departments & Team"
         title="Who's on site"
         desc="Five departments, six engineers, one project lead — delivering across all three lines."
       />
@@ -290,6 +317,25 @@ function TeamSection({ departments, team }: { departments: Department[]; team: M
             View critical-path task
             <span aria-hidden>→</span>
           </Link>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ------------------------------ ACTIVITY --------------------------------- */
+
+function ActivitySection({ activity }: { activity: ActivityRow[] }) {
+  return (
+    <section id="activity" className="scroll-mt-24 pt-20">
+      <SectionHead
+        kicker="05 · Activity"
+        title="Recent activity"
+        desc="A live trail of what the team has updated, completed and assigned — newest first."
+      />
+      <Reveal>
+        <div className="mt-10">
+          <ActivityFeed items={activity} />
         </div>
       </Reveal>
     </section>

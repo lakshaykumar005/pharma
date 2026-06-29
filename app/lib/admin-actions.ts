@@ -14,6 +14,7 @@ import {
   deleteUser,
   updateProjectSettings,
 } from "./mutations";
+import { logActivity } from "./activity";
 import type { Role } from "./types";
 
 const s = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
@@ -45,13 +46,15 @@ async function ensureAdmin() {
 /* ------------------------------- tasks ----------------------------------- */
 
 export async function createTaskAction(fd: FormData) {
-  await ensureEditor();
+  const u = await ensureEditor();
+  const desc = s(fd, "description");
+  const owner = s(fd, "owner");
   try {
     await createTask({
-      description: s(fd, "description"),
+      description: desc,
       phaseCode: s(fd, "phaseCode"),
       roleCode: s(fd, "roleCode"),
-      owner: s(fd, "owner"),
+      owner,
       startDate: s(fd, "startDate"),
       endDate: s(fd, "endDate"),
       workDays: n(fd, "workDays"),
@@ -60,21 +63,24 @@ export async function createTaskAction(fd: FormData) {
   } catch (e) {
     fail(e instanceof Error ? e.message : "Could not create task");
   }
+  await logActivity({ actor: u.name, verb: "created & assigned", target: desc, detail: owner ? `to ${owner}` : undefined });
   refresh();
   back("Task created & assigned");
 }
 
 export async function updateTaskAction(fd: FormData) {
-  await ensureEditor();
+  const u = await ensureEditor();
   const id = n(fd, "id");
+  const owner = s(fd, "owner");
   try {
-    await updateTask(id, {
-      owner: s(fd, "owner"),
+    const r = await updateTask(id, {
+      owner,
       roleCode: s(fd, "roleCode"),
       startDate: s(fd, "startDate"),
       endDate: s(fd, "endDate"),
       workDays: n(fd, "workDays"),
     });
+    await logActivity({ actor: u.name, verb: "reassigned", target: r.desc, detail: `to ${owner}`, taskId: id });
   } catch (e) {
     fail(e instanceof Error ? e.message : "Could not update task");
   }
@@ -83,9 +89,10 @@ export async function updateTaskAction(fd: FormData) {
 }
 
 export async function deleteTaskAction(fd: FormData) {
-  await ensureEditor();
+  const u = await ensureEditor();
   try {
-    await deleteTask(n(fd, "id"));
+    const r = await deleteTask(n(fd, "id"));
+    await logActivity({ actor: u.name, verb: "removed task", target: r.desc });
   } catch (e) {
     fail(e instanceof Error ? e.message : "Could not delete task");
   }
@@ -96,10 +103,11 @@ export async function deleteTaskAction(fd: FormData) {
 /* ------------------------------- team ------------------------------------ */
 
 export async function createMemberAction(fd: FormData) {
-  await ensureEditor();
+  const u = await ensureEditor();
+  const name = s(fd, "name");
   try {
     await createMember({
-      name: s(fd, "name"),
+      name,
       title: s(fd, "title"),
       roleCode: s(fd, "roleCode"),
       lead: fd.get("lead") === "on",
@@ -107,6 +115,7 @@ export async function createMemberAction(fd: FormData) {
   } catch (e) {
     fail(e instanceof Error ? e.message : "Could not add member");
   }
+  await logActivity({ actor: u.name, verb: "onboarded", target: name });
   refresh();
   back("Team member onboarded");
 }
@@ -125,17 +134,20 @@ export async function deleteMemberAction(fd: FormData) {
 /* ------------------------------- users ----------------------------------- */
 
 export async function createUserAction(fd: FormData) {
-  await ensureAdmin();
+  const u = await ensureAdmin();
+  const name = s(fd, "name");
+  const role = s(fd, "role");
   try {
     await createUser({
       email: s(fd, "email"),
-      name: s(fd, "name"),
-      role: s(fd, "role") as Role,
+      name,
+      role: role as Role,
       password: String(fd.get("password") ?? ""),
     });
   } catch (e) {
     fail(e instanceof Error ? e.message : "Could not create user");
   }
+  await logActivity({ actor: u.name, verb: "added user", target: name, detail: `as ${role}` });
   refresh();
   back("User account created");
 }

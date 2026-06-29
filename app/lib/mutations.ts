@@ -40,7 +40,7 @@ export async function updateTaskProgress(id: number, pct: number) {
   return prisma.$transaction(async (tx) => {
     await tx.task.update({ where: { id }, data: { pct: clamped } });
     const phasePct = await recomputePhase(tx, task.phaseCode);
-    return { id, pct: clamped, phaseCode: task.phaseCode, phasePct };
+    return { id, pct: clamped, phaseCode: task.phaseCode, phasePct, desc: task.description };
   });
 }
 
@@ -74,7 +74,7 @@ export async function setSubtaskDone(id: number, done: boolean) {
     await tx.subtask.update({ where: { id }, data: { done: Boolean(done) } });
     const taskPct = await recomputeTaskFromSubtasks(tx, sub.taskId);
     const phasePct = await recomputePhase(tx, sub.task.phaseCode);
-    return { id, done: Boolean(done), taskId: sub.taskId, taskPct, phasePct };
+    return { id, done: Boolean(done), taskId: sub.taskId, taskPct, phasePct, title: sub.title };
   });
 }
 
@@ -191,7 +191,7 @@ export async function updateTask(id: number, input: EditTaskInput) {
   return prisma.$transaction(async (tx) => {
     await tx.task.update({ where: { id }, data });
     const phasePct = await recomputePhase(tx, task.phaseCode);
-    return { id, phasePct };
+    return { id, phasePct, desc: task.description };
   });
 }
 
@@ -206,7 +206,7 @@ export async function deleteTask(id: number) {
     await tx.subtask.deleteMany({ where: { taskId: id } });
     await tx.task.delete({ where: { id } });
     const phasePct = await recomputePhase(tx, task.phaseCode);
-    return { id, phaseCode: task.phaseCode, phasePct };
+    return { id, phaseCode: task.phaseCode, phasePct, desc: task.description };
   });
 }
 

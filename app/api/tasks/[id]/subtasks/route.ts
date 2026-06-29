@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { addSubtask } from "@/app/lib/mutations";
+import { logActivity } from "@/app/lib/activity";
 import { checkOrigin, requireEditor } from "@/app/lib/api-guard";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +27,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   try {
     const result = await addSubtask(Number(id), title);
+    await logActivity({
+      actor: guard.user.name,
+      verb: "added subtask",
+      target: result.subtask.title,
+      taskId: Number(id),
+    });
     revalidatePath(`/task/${id}`);
     revalidatePath("/dashboard");
     return NextResponse.json({ ok: true, ...result }, { status: 201 });

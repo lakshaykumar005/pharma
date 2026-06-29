@@ -98,6 +98,19 @@ model Subtask {
   createdAt DateTime @default(now())
 }
 
+/// Audit trail / activity feed — what was done, by whom, when.
+model Activity {
+  id        Int      @id @default(autoincrement())
+  actor     String
+  verb      String // completed | updated | checked off | created | reassigned | onboarded | added user
+  target    String
+  detail    String?
+  taskId    Int?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 /// Application users who can sign in. Roles: ADMIN | EDITOR | VIEWER.
 model User {
   id           Int      @id @default(autoincrement())

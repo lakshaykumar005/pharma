@@ -7,9 +7,10 @@ import type { SessionUser } from "@/app/lib/types";
 
 const NAV = [
   { href: "/dashboard#overview", id: "overview", label: "Overview" },
-  { href: "/dashboard#workstreams", id: "workstreams", label: "Workstreams" },
+  { href: "/dashboard#plan", id: "plan", label: "Plan" },
   { href: "/dashboard#timeline", id: "timeline", label: "Timeline" },
   { href: "/dashboard#team", id: "team", label: "Team" },
+  { href: "/dashboard#activity", id: "activity", label: "Activity" },
 ];
 
 function initials(name: string) {
