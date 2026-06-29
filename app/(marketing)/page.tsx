@@ -7,7 +7,6 @@ import { SpotlightCard } from "@/app/components/ui/SpotlightCard";
 import { TiltCard } from "@/app/components/ui/TiltCard";
 import { Marquee } from "@/app/components/ui/Marquee";
 import { NumberTicker } from "@/app/components/ui/NumberTicker";
-import { Meteors } from "@/app/components/ui/Meteors";
 import { ChecklistMock, GanttMock, ProgressMock, RolePills, AvatarStack } from "@/app/components/ui/mocks";
 
 export const dynamic = "force-dynamic";
@@ -22,9 +21,6 @@ export default async function Landing() {
     <div className="overflow-x-clip">
       {/* ============================ HERO ============================ */}
       <section className="relative">
-        <div className="aurora" />
-        <Meteors count={12} />
-
         <div className="relative mx-auto max-w-[1240px] px-4 pb-10 pt-20 sm:px-6 sm:pt-28">
           <Reveal>
             <div className="flex justify-center">
@@ -348,8 +344,7 @@ function HeroPreview({
 }) {
   return (
     <div className="relative mx-auto mt-16 max-w-4xl">
-      <div className="pointer-events-none absolute -inset-x-10 -top-12 -z-10 h-48 rounded-full bg-brand/20 blur-[80px]" />
-      <div className="rounded-2xl border border-black/12 bg-gradient-to-b from-panel to-canvas-2 p-2.5 shadow-[0_50px_140px_-50px_rgba(236,28,43,0.55)]">
+      <div className="rounded-2xl border border-black/12 bg-gradient-to-b from-panel to-canvas-2 p-2.5 shadow-[0_50px_120px_-50px_rgba(0,0,0,0.4)]">
         {/* browser chrome */}
         <div className="flex items-center gap-2 px-3 py-2">
           <span className="h-2.5 w-2.5 rounded-full bg-brand/70" />

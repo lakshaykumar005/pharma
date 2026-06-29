@@ -42,6 +42,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${plexSans.variable} ${plexMono.variable} ${bebas.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">{children}</body>

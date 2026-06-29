@@ -73,16 +73,11 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* page-wide dark grid + soft red glow at the top */
+  /* page-wide dark grid on a clean canvas (no red tint) */
   background-image:
-    radial-gradient(900px 520px at 88% -4%, rgba(236, 28, 43, 0.08), transparent 60%),
     linear-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
-  background-size:
-    100% 720px,
-    46px 46px,
-    46px 46px;
-  background-repeat: no-repeat, repeat, repeat;
+  background-size: 46px 46px;
 }
 
 ::selection {
