@@ -87,7 +87,7 @@ try {
   check("Manager can open /manage", (await pathAfter(a.page, "/manage")) === "/manage");
   {
     const body = await a.page.textContent("body");
-    check("Manage shows all panels", ["Phases & plan", "Tasks & assignments", "Onboard team", "Access", "Project settings"].every((t) => body.includes(t)));
+    check("Manage shows all panels", ["Phases & plan", "Tasks & assignments", "Onboard team", "Designation", "Access", "Project settings"].every((t) => body.includes(t)));
   }
   await shot(a.page, "qa-manage");
   for (const id of ["plan", "timeline", "team", "activity"]) {

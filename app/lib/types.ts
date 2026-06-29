@@ -20,6 +20,16 @@ export const DEPARTMENT_NAMES: Record<RoleCode, string> = {
   SIM: "Simulation",
 };
 
+/** Suggested designations within each department. A department (role) is shared
+    by many people, so the designation is what distinguishes each person. */
+export const DESIGNATIONS: Record<RoleCode, string[]> = {
+  DES: ["Design Engineer", "Senior Design Engineer", "Design Lead", "CAD Engineer", "Draughtsman"],
+  PRO: ["Project Lead", "Project Manager", "Project Engineer", "Site Engineer", "Commissioning Engineer"],
+  "A&P": ["Purchase Officer", "Procurement Lead", "Accounts Executive", "Vendor Coordinator"],
+  SER: ["Service Engineer", "Service Lead", "Field Service Engineer", "Maintenance Engineer"],
+  SIM: ["Simulation Engineer", "Process Simulation Lead", "Modelling Engineer"],
+};
+
 export interface SessionUser {
   uid: number;
   email: string;

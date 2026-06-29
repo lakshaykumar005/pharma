@@ -24,6 +24,8 @@ import {
   movePhaseAction,
 } from "@/app/lib/admin-actions";
 import { fmtShort } from "@/app/lib/helpers";
+import { DesignationPicker } from "@/app/components/DesignationPicker";
+import type { RoleCode } from "@/app/lib/types";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Manage — Command Center" };
@@ -288,25 +290,20 @@ export default async function ManagePage({
       {/* ============================ TEAM ============================ */}
       <section className="mt-12">
         <h2 className="text-lg font-semibold text-ink">Onboard team</h2>
+        <p className="mt-1 text-xs text-mute">
+          Department is the shared functional role; <b>designation</b> is the person&apos;s specific
+          title within it (several people can share a department, so the designation distinguishes them).
+        </p>
         <form action={createMemberAction} className="card mt-3 grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
             <label className={label}>Name</label>
             <input name="name" required placeholder="Full name" className={input} />
           </div>
-          <div className="lg:col-span-1">
-            <label className={label}>Title</label>
-            <input name="title" required placeholder="e.g. Process Engineer" className={input} />
-          </div>
-          <div>
-            <label className={label}>Department</label>
-            <select name="roleCode" required className={input} defaultValue={departments[0]?.code}>
-              {departments.map((d) => (
-                <option key={d.code} value={d.code}>
-                  {d.code} · {d.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <DesignationPicker
+            departments={departments.map((d) => ({ code: d.code as RoleCode, name: d.name }))}
+            inputClass={input}
+            labelClass={label}
+          />
           <div className="flex items-end justify-between gap-3">
             <label className="flex items-center gap-2 text-xs text-mute">
               <input name="lead" type="checkbox" className="h-4 w-4 accent-brand" /> Project lead
