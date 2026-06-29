@@ -2,15 +2,16 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { addComment } from "@/app/lib/mutations";
 import { logActivity } from "@/app/lib/activity";
-import { checkOrigin, requireEditor } from "@/app/lib/api-guard";
+import { checkOrigin, requireAuth } from "@/app/lib/api-guard";
 
 export const dynamic = "force-dynamic";
 
-// POST /api/tasks/:id/comments — add a comment (managers + engineers).
+// POST /api/tasks/:id/comments — add a comment. Open to everyone signed in,
+// including clients (VIEWER) — the discussion is a two-way channel.
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const origin = checkOrigin(req);
   if (origin) return origin;
-  const guard = await requireEditor();
+  const guard = await requireAuth();
   if ("res" in guard) return guard.res;
 
   const { id } = await params;

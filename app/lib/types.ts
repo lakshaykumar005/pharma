@@ -5,6 +5,8 @@ export type RoleCode = "DES" | "PRO" | "A&P" | "SER" | "SIM";
 export type ItemType = "T" | "M";
 export type DepType = "FS" | "FF";
 export type TaskState = "ACTIVE" | "BLOCKED" | "ON_HOLD";
+/** Client sign-off on a deliverable. null = awaiting the client's review. */
+export type Approval = "APPROVED" | "CHANGES" | null;
 
 /** Auth roles. ADMIN/EDITOR can write; VIEWER is read-only. */
 export type Role = "ADMIN" | "EDITOR" | "VIEWER";
@@ -76,6 +78,10 @@ export interface Task {
   workDays: number;
   pct: number;
   state: TaskState;
+  approval: Approval;
+  approvalBy: string | null;
+  approvalNote: string | null;
+  approvalAt: string | null;
   deps: number[];
   depType: DepType;
   phaseCode: string;

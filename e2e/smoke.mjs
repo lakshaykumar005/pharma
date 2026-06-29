@@ -47,6 +47,11 @@ try {
   check("Client signs in", true);
   check("Client blocked from /manage", (await pathAfter(v.page, "/manage")) === "/dashboard");
   check("Client blocked from /my-tasks", (await pathAfter(v.page, "/my-tasks")) === "/dashboard");
+  check(
+    "Client sign-off hub renders",
+    (await pathAfter(v.page, "/alerts")) === "/alerts" &&
+      (await v.page.textContent("body")).includes("Your sign-off"),
+  );
   await v.ctx.close();
 
   // editor / engineer (Rahul Karkera · Design department)
@@ -68,6 +73,12 @@ try {
   } else {
     check("found an out-of-dept task to test", false);
   }
+  // engineers can't record client sign-off (negative, no write)
+  const apRes = await e.page.request.post(`${BASE}/api/tasks/9/approval`, {
+    data: { approval: "APPROVED" },
+    headers: { "content-type": "application/json" },
+  });
+  check("Engineer blocked from client sign-off (403)", apRes.status() === 403);
   await e.ctx.close();
 
   // admin / manager

@@ -9,6 +9,7 @@ import { RoleBadge } from "@/app/components/RoleBadge";
 import { StatusBadge } from "@/app/components/StatusBadge";
 import { ProgressControl } from "@/app/components/ProgressControl";
 import { StateControl } from "@/app/components/StateControl";
+import { ClientSignoff } from "@/app/components/ClientSignoff";
 import { Subtasks } from "@/app/components/Subtasks";
 import { Comments } from "@/app/components/Comments";
 
@@ -33,6 +34,9 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
   // Engineers can only work on tasks assigned to them or in their own department.
   const canWork = canEditTask(user, task);
   const blockedByScope = canEdit(user.role) && !canWork;
+  // Client sign-off: shown on delivered work + milestones; the client (or manager) decides.
+  const signoffEligible = isMilestone || task.pct >= 100;
+  const canSignoff = user.role === "VIEWER" || user.role === "ADMIN";
   const onBaseline = task.start === task.baselineStart && task.end === task.baselineEnd;
   const cleanDesc = task.desc.replace(/^Milestone-\d+ · /, "");
 
@@ -183,12 +187,26 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
         </div>
       )}
 
+      {/* client sign-off — appears once the deliverable is complete (or for milestones) */}
+      {signoffEligible && (
+        <div className="mt-5">
+          <ClientSignoff
+            taskId={task.id}
+            initial={task.approval}
+            by={task.approvalBy}
+            note={task.approvalNote}
+            at={task.approvalAt}
+            canSignoff={canSignoff}
+          />
+        </div>
+      )}
+
       {/* discussion */}
       <div className="mt-5">
         <Comments
           taskId={task.id}
           initial={detail.comments}
-          canComment={canEdit(user.role)}
+          canComment
           meName={user.name}
           meRole={user.role}
         />

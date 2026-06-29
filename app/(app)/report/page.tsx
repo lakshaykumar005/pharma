@@ -84,6 +84,7 @@ export default async function ReportPage() {
               <th className="py-1.5 font-mono font-normal uppercase tracking-widest">Window</th>
               <th className="py-1.5 text-right font-mono font-normal uppercase tracking-widest">%</th>
               <th className="py-1.5 text-right font-mono font-normal uppercase tracking-widest">Status</th>
+              <th className="py-1.5 text-right font-mono font-normal uppercase tracking-widest">Sign-off</th>
             </tr>
           </thead>
           <tbody>
@@ -94,6 +95,15 @@ export default async function ReportPage() {
                 <td className="py-1.5 pr-2 font-mono text-faint">{fmtShort(t.start)}–{fmtShort(t.end)}</td>
                 <td className="py-1.5 text-right text-ink">{t.pct}%</td>
                 <td className="py-1.5 text-right text-mute">{statusOf(t, project.asOf)}</td>
+                <td className="py-1.5 text-right text-mute">
+                  {t.approval === "APPROVED"
+                    ? "✓ Approved"
+                    : t.approval === "CHANGES"
+                      ? "Changes"
+                      : t.pct >= 100
+                        ? "Awaiting"
+                        : "—"}
+                </td>
               </tr>
             ))}
           </tbody>

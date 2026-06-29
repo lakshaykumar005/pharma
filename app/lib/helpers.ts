@@ -73,6 +73,16 @@ export function statusOf(t: Task, asOf: string): Status {
   return "Upcoming";
 }
 
+/** Client sign-off buckets. Delivered work (complete tasks + milestones) split by
+    the client's decision. `awaiting` = delivered but not yet reviewed. */
+export function computeSignoffs(tasks: Task[]) {
+  const delivered = tasks.filter((t) => t.type === "M" || t.pct >= 100);
+  const awaiting = delivered.filter((t) => !t.approval);
+  const changes = tasks.filter((t) => t.approval === "CHANGES");
+  const approved = delivered.filter((t) => t.approval === "APPROVED");
+  return { awaiting, changes, approved };
+}
+
 /** Tasks needing attention, role-filtered. dueSoon = within `days`, not done. */
 export function computeAlerts(tasks: Task[], asOf: string, days = 7) {
   const real = tasks.filter((t) => t.type === "T" && t.pct < 100);

@@ -70,7 +70,19 @@ function TaskItem({ t, asOf, tone }: { t: Task; asOf: string; tone: Tone }) {
           <RoleBadge code={t.role} />
         </div>
         <div className="mt-2 flex items-center justify-between text-[0.7rem]">
-          <span className="truncate text-mute">{t.owner}</span>
+          <span className="flex min-w-0 items-center gap-1.5">
+            <span className="truncate text-mute">{t.owner}</span>
+            {t.approval === "APPROVED" && (
+              <span className="shrink-0 rounded bg-black/8 px-1.5 py-0.5 font-mono text-[0.5rem] uppercase tracking-widest text-ink">
+                ✓ Signed off
+              </span>
+            )}
+            {t.approval === "CHANGES" && (
+              <span className="shrink-0 rounded bg-brand/12 px-1.5 py-0.5 font-mono text-[0.5rem] uppercase tracking-widest text-brand-bright">
+                ⟳ Changes
+              </span>
+            )}
+          </span>
           <span className={`shrink-0 font-mono ${overdue ? "text-brand" : "text-faint"}`}>
             {fmtShort(t.end)} · {deadline}
           </span>

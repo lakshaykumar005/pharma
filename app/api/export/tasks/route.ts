@@ -15,7 +15,9 @@ export async function GET() {
   if ("res" in guard) return guard.res;
 
   const [project, tasks] = await Promise.all([getProject(), getAllTasks()]);
-  const headers = ["ID", "Phase", "Type", "Description", "Department", "Owner", "Start", "End", "Work days", "Percent", "Status"];
+  const headers = ["ID", "Phase", "Type", "Description", "Department", "Owner", "Start", "End", "Work days", "Percent", "Status", "Client sign-off"];
+  const signoff = (t: (typeof tasks)[number]) =>
+    t.approval === "APPROVED" ? "Approved" : t.approval === "CHANGES" ? "Changes requested" : t.pct >= 100 || t.type === "M" ? "Awaiting" : "";
   const rows = tasks.map((t) => [
     t.id,
     t.phaseCode,
@@ -28,6 +30,7 @@ export async function GET() {
     t.workDays,
     t.pct,
     statusOf(t, project.asOf),
+    signoff(t),
   ]);
   const csv = [headers, ...rows].map((r) => r.map(csvCell).join(",")).join("\r\n");
 

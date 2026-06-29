@@ -86,6 +86,11 @@ model Task {
   dependents    Dependency[] @relation("TaskDependents")
   subtasks      Subtask[]
   comments      Comment[]
+  // Client sign-off on delivered work / milestones.
+  approval      String? // null = awaiting review | APPROVED | CHANGES
+  approvalBy    String?
+  approvalNote  String?
+  approvalAt    DateTime?
   updatedAt     DateTime     @updatedAt
 }
 

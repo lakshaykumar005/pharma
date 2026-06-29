@@ -25,6 +25,30 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
   }
 }
 
+/** Best-effort: tell the task owner the client signed off / asked for changes. */
+export async function notifyClientDecision(
+  ownerName: string,
+  taskDesc: string,
+  decision: "APPROVED" | "CHANGES",
+  note: string,
+): Promise<void> {
+  try {
+    if (!ownerName || ownerName === "Unassigned") return;
+    const user = await prisma.user.findFirst({ where: { name: ownerName } });
+    if (!user) return;
+    const verb = decision === "APPROVED" ? "approved" : "requested changes on";
+    const extra = decision === "CHANGES" && note ? `<p><em>"${note}"</em></p>` : "";
+    await sendEmail(
+      user.email,
+      `Client ${verb}: ${taskDesc}`,
+      `<p>Hi ${user.name},</p><p>The client has ${verb} <strong>${taskDesc}</strong>.</p>${extra}` +
+        `<p>Open the command center for details.</p>`,
+    );
+  } catch {
+    // never let notification failures affect the main action
+  }
+}
+
 /** Best-effort: email the assignee (if they have a user account) about a task. */
 export async function notifyAssignment(ownerName: string, taskDesc: string): Promise<void> {
   try {

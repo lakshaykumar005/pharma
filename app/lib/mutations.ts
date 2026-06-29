@@ -101,6 +101,30 @@ export async function setTaskState(id: number, state: string) {
   return { id, state, desc: task.description };
 }
 
+/** Client sign-off on a deliverable. decision: "APPROVED" | "CHANGES" | null (clear). */
+export async function setApproval(taskId: number, decision: string | null, by: string, note: string) {
+  if (decision !== null && decision !== "APPROVED" && decision !== "CHANGES") {
+    throw new Error("Invalid decision");
+  }
+  const task = await prisma.task.findUnique({ where: { id: taskId } });
+  if (!task) throw new Error("Task not found");
+  // Only delivered work or milestones can be signed off.
+  if (decision !== null && task.type !== "M" && task.pct < 100) {
+    throw new Error("Only completed work can be signed off");
+  }
+  const trimmed = note.trim().slice(0, 500);
+  await prisma.task.update({
+    where: { id: taskId },
+    data: {
+      approval: decision,
+      approvalBy: decision ? by : null,
+      approvalNote: decision === "CHANGES" ? trimmed : null,
+      approvalAt: decision ? new Date() : null,
+    },
+  });
+  return { id: taskId, approval: decision, desc: task.description, owner: task.owner };
+}
+
 /** Add a comment / note to a task. */
 export async function addComment(taskId: number, author: string, role: string, body: string) {
   const clean = body.trim();

@@ -28,6 +28,10 @@ type TaskRow = {
   workDays: number;
   pct: number;
   state: string;
+  approval: string | null;
+  approvalBy: string | null;
+  approvalNote: string | null;
+  approvalAt: Date | null;
   depType: string;
   phaseCode: string;
   critical: boolean;
@@ -49,6 +53,10 @@ function mapTask(t: TaskRow): Task {
     workDays: t.workDays,
     pct: t.pct,
     state: (t.state as Task["state"]) ?? "ACTIVE",
+    approval: (t.approval as Task["approval"]) ?? null,
+    approvalBy: t.approvalBy ?? null,
+    approvalNote: t.approvalNote ?? null,
+    approvalAt: t.approvalAt ? t.approvalAt.toISOString() : null,
     deps: (t.predecessors ?? []).map((d) => d.dependsOnId).sort((a, b) => a - b),
     depType: t.depType as DepType,
     phaseCode: t.phaseCode,

@@ -69,23 +69,39 @@ export function Comments({
       </div>
 
       <ul className="mt-4 space-y-3">
-        {items.map((c) => (
-          <li key={c.id} className="flex gap-3">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-black/[0.06] font-mono text-[0.58rem] text-ink">
-              {initials(c.author)}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-semibold text-ink">{c.author}</span>
-                <span className="rounded border border-black/12 px-1.5 py-0.5 font-mono text-[0.5rem] uppercase tracking-widest text-faint">
-                  {roleLabel(c.role)}
-                </span>
-                <span className="font-mono text-[0.58rem] text-faint">{timeAgo(c.createdAt)}</span>
-              </p>
-              <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-ink/90">{c.body}</p>
-            </div>
-          </li>
-        ))}
+        {items.map((c) => {
+          const isClient = c.role === "VIEWER";
+          return (
+            <li
+              key={c.id}
+              className={`flex gap-3 ${isClient ? "rounded-xl border border-brand/30 bg-brand/[0.05] p-3" : ""}`}
+            >
+              <span
+                className={`grid h-8 w-8 shrink-0 place-items-center rounded-full font-mono text-[0.58rem] ${
+                  isClient ? "bg-brand text-white" : "bg-black/[0.06] text-ink"
+                }`}
+              >
+                {initials(c.author)}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-semibold text-ink">{c.author}</span>
+                  <span
+                    className={`rounded px-1.5 py-0.5 font-mono text-[0.5rem] uppercase tracking-widest ${
+                      isClient
+                        ? "bg-brand/15 text-brand-bright"
+                        : "border border-black/12 text-faint"
+                    }`}
+                  >
+                    {roleLabel(c.role)}
+                  </span>
+                  <span className="font-mono text-[0.58rem] text-faint">{timeAgo(c.createdAt)}</span>
+                </p>
+                <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-ink/90">{c.body}</p>
+              </div>
+            </li>
+          );
+        })}
         {items.length === 0 && (
           <li className="rounded-lg border border-dashed border-black/10 px-3 py-5 text-center text-sm text-faint">
             No comments yet.{canComment ? " Start the discussion below." : ""}
@@ -98,7 +114,7 @@ export function Comments({
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Add a note or update…"
+            placeholder={meRole === "VIEWER" ? "Share feedback or ask the team a question…" : "Add a note or update…"}
             rows={2}
             maxLength={1000}
             className="w-full resize-y rounded-lg border border-black/12 bg-black/[0.03] px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-brand/60"
