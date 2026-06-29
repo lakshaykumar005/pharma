@@ -8,6 +8,7 @@ import { ProgressRing } from "@/app/components/ProgressRing";
 import { RoleBadge } from "@/app/components/RoleBadge";
 import { StatusBadge } from "@/app/components/StatusBadge";
 import { ProgressControl } from "@/app/components/ProgressControl";
+import { StateControl } from "@/app/components/StateControl";
 import { Subtasks } from "@/app/components/Subtasks";
 import { Comments } from "@/app/components/Comments";
 
@@ -96,6 +97,11 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
             <DateBlock label="Planned start" value={fmtLong(task.start)} />
             <DateBlock label="Planned finish" value={fmtLong(task.end)} />
           </div>
+
+          {/* working state — active / blocked / on-hold */}
+          {!isMilestone && (
+            <StateControl taskId={task.id} initial={task.state} canEdit={canEdit(user.role)} />
+          )}
 
           {/* editable progress — writes to the database (editors/admins only) */}
           <ProgressControl

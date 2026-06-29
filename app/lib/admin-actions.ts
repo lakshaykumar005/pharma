@@ -15,6 +15,7 @@ import {
   updateProjectSettings,
 } from "./mutations";
 import { logActivity } from "./activity";
+import { notifyAssignment } from "./email";
 import type { Role } from "./types";
 
 const s = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
@@ -61,6 +62,7 @@ export async function createTaskAction(fd: FormData) {
     fail(e instanceof Error ? e.message : "Could not create task");
   }
   await logActivity({ actor: u.name, verb: "created & assigned", target: desc, detail: owner ? `to ${owner}` : undefined });
+  await notifyAssignment(owner, desc);
   refresh();
   back("Task created & assigned");
 }
@@ -78,6 +80,7 @@ export async function updateTaskAction(fd: FormData) {
       workDays: n(fd, "workDays"),
     });
     await logActivity({ actor: u.name, verb: "reassigned", target: r.desc, detail: `to ${owner}`, taskId: id });
+    await notifyAssignment(owner, r.desc);
   } catch (e) {
     fail(e instanceof Error ? e.message : "Could not update task");
   }

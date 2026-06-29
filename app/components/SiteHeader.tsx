@@ -22,7 +22,15 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | null }) {
+export function SiteHeader({
+  asOf,
+  user,
+  alertCount = 0,
+}: {
+  asOf: string;
+  user: SessionUser | null;
+  alertCount?: number;
+}) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("overview");
   const [scrolled, setScrolled] = useState(false);
@@ -108,11 +116,30 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
 
             {/* desktop user menu */}
             <div className="hidden items-center gap-3 md:flex">
+              <Link
+                href="/alerts"
+                aria-label={`Alerts${alertCount ? ` (${alertCount})` : ""}`}
+                className="relative grid h-9 w-9 place-items-center rounded-full border border-black/10 text-mute transition-colors hover:border-brand/40 hover:text-brand"
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                  <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+                </svg>
+                {alertCount > 0 && (
+                  <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-brand px-1 text-[0.55rem] font-bold text-white">
+                    {alertCount}
+                  </span>
+                )}
+              </Link>
               <span className="chip border-brand/40 text-brand-bright">
                 <span className="h-1.5 w-1.5 rounded-full bg-brand-bright animate-[blink_1.6s_ease-in-out_infinite]" />
                 Live · {asOf}
               </span>
-              <span className="flex items-center gap-2 rounded-full border border-black/10 bg-black/[0.03] py-1 pl-1 pr-3">
+              <Link
+                href="/account"
+                className="flex items-center gap-2 rounded-full border border-black/10 bg-black/[0.03] py-1 pl-1 pr-3 transition-colors hover:border-brand/40"
+                title="Account settings"
+              >
                 <span className="grid h-7 w-7 place-items-center rounded-full bg-brand/20 font-mono text-[0.62rem] text-brand-bright">
                   {initials(user.name)}
                 </span>
@@ -124,7 +151,7 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
                     {user.role}
                   </span>
                 </span>
-              </span>
+              </Link>
               <form action={logoutAction}>
                 <button className="rounded-full border border-black/10 px-3 py-2 text-xs font-medium text-mute transition-colors hover:border-brand/40 hover:text-ink">
                   Sign out
@@ -173,6 +200,32 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
                 {n.label}
               </Link>
             ))}
+            <Link
+              href="/alerts"
+              onClick={() => setOpen(false)}
+              className="flex items-center justify-between rounded-lg px-3 py-3 text-base font-medium text-mute"
+            >
+              Alerts
+              {alertCount > 0 && (
+                <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand px-1.5 text-[0.6rem] font-bold text-white">
+                  {alertCount}
+                </span>
+              )}
+            </Link>
+            <Link
+              href="/account"
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-3 py-3 text-base font-medium text-mute"
+            >
+              Account
+            </Link>
+            <Link
+              href="/report"
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-3 py-3 text-base font-medium text-mute"
+            >
+              Report
+            </Link>
             {(user.role === "ADMIN" || user.role === "EDITOR") && (
               <Link
                 href="/my-tasks"

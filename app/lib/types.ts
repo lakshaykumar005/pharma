@@ -4,6 +4,7 @@
 export type RoleCode = "DES" | "PRO" | "A&P" | "SER" | "SIM";
 export type ItemType = "T" | "M";
 export type DepType = "FS" | "FF";
+export type TaskState = "ACTIVE" | "BLOCKED" | "ON_HOLD";
 
 /** Auth roles. ADMIN/EDITOR can write; VIEWER is read-only. */
 export type Role = "ADMIN" | "EDITOR" | "VIEWER";
@@ -63,6 +64,7 @@ export interface Task {
   baselineEnd: string;
   workDays: number;
   pct: number;
+  state: TaskState;
   deps: number[];
   depType: DepType;
   phaseCode: string;

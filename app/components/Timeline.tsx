@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { type Phase, type Task, type ProjectMeta } from "@/app/lib/types";
-import { axisPct, barGeom, monthBands, fmtShort } from "@/app/lib/helpers";
+import { axisPct, barGeom, monthBands, fmtShort, daysBetween } from "@/app/lib/helpers";
 import { RoleBadge } from "./RoleBadge";
 
-function Bar({ task, project }: { task: Task; project: ProjectMeta }) {
+function Bar({ task, project, asOf }: { task: Task; project: ProjectMeta; asOf: string }) {
   const { left, width } = barGeom(task, project);
   const complete = task.pct >= 100;
-  const started = task.pct > 0;
+  const blocked = !complete && task.state === "BLOCKED";
+  const onHold = !complete && task.state === "ON_HOLD";
+  const overdue = !complete && daysBetween(asOf, task.end) < 0;
 
   if (task.type === "M") {
     const l = axisPct(task.start, project);
@@ -22,6 +24,24 @@ function Bar({ task, project }: { task: Task; project: ProjectMeta }) {
     );
   }
 
+  // fill colour reflects state; width reflects exact % complete
+  const fill = complete
+    ? "linear-gradient(90deg,#202024,#3b3b42)"
+    : blocked
+      ? "repeating-linear-gradient(45deg,var(--color-brand),var(--color-brand) 5px,var(--color-brand-deep) 5px,var(--color-brand-deep) 10px)"
+      : onHold
+        ? "linear-gradient(90deg,#f59e0b,#b45309)"
+        : "linear-gradient(90deg,var(--color-brand-bright),var(--color-brand-deep))";
+  const borderColor = complete
+    ? "rgba(0,0,0,0.22)"
+    : blocked || overdue
+      ? "rgba(236,28,43,0.6)"
+      : onHold
+        ? "rgba(245,158,11,0.6)"
+        : task.pct > 0
+          ? "rgba(236,28,43,0.45)"
+          : "rgba(0,0,0,0.14)";
+
   return (
     <Link
       href={`/task/${task.id}`}
@@ -29,29 +49,23 @@ function Bar({ task, project }: { task: Task; project: ProjectMeta }) {
       style={{
         left: `${left}%`,
         width: `${width}%`,
-        minWidth: 22,
-        borderColor: complete
-          ? "rgba(0,0,0,0.22)"
-          : started
-            ? "rgba(236,28,43,0.55)"
-            : "rgba(0,0,0,0.14)",
-        background: complete ? "rgba(0,0,0,0.10)" : "rgba(0,0,0,0.03)",
+        minWidth: 26,
+        borderColor,
+        background: "rgba(0,0,0,0.04)",
       }}
-      title={`${task.desc} · ${fmtShort(task.start)}–${fmtShort(task.end)} · ${task.pct}%`}
+      title={`${task.desc} · ${fmtShort(task.start)}–${fmtShort(task.end)} · ${task.pct}%${
+        blocked ? " · BLOCKED" : onHold ? " · ON HOLD" : overdue ? " · OVERDUE" : ""
+      }`}
     >
+      {/* proportional progress fill */}
+      <span className="absolute inset-y-0 left-0 transition-[width] duration-500" style={{ width: `${task.pct}%`, background: fill }} />
       <span
-        className="absolute inset-y-0 left-0"
-        style={{
-          width: `${task.pct}%`,
-          background: complete
-            ? "linear-gradient(90deg,#202024,#3b3b42)"
-            : "linear-gradient(90deg,var(--color-brand-bright),var(--color-brand-deep))",
-        }}
-      />
-      <span
-        className={`relative z-10 truncate px-2 font-mono text-[0.62rem] ${complete ? "text-paper-ink" : "text-ink"}`}
+        className={`relative z-10 flex w-full items-center gap-1 truncate px-2 font-mono text-[0.6rem] ${
+          complete ? "text-paper-ink" : "text-ink"
+        }`}
       >
-        {task.pct}%
+        {blocked ? "⚠ " : onHold ? "⏸ " : ""}
+        {complete ? "100%" : `${task.pct}%`}
       </span>
     </Link>
   );
@@ -75,6 +89,16 @@ export function Timeline({ phases, project }: { phases: Phase[]; project: Projec
         </span>
         <span className="flex items-center gap-2 text-xs text-mute">
           <span className="h-2.5 w-4 rounded-sm border border-black/20 bg-black/5" /> Upcoming
+        </span>
+        <span className="flex items-center gap-2 text-xs text-mute">
+          <span
+            className="h-2.5 w-4 rounded-sm"
+            style={{ background: "repeating-linear-gradient(45deg,var(--color-brand),var(--color-brand) 3px,var(--color-brand-deep) 3px,var(--color-brand-deep) 6px)" }}
+          />{" "}
+          Blocked
+        </span>
+        <span className="flex items-center gap-2 text-xs text-mute">
+          <span className="h-2.5 w-4 rounded-sm bg-gradient-to-r from-amber-500 to-amber-700" /> On hold
         </span>
         <span className="flex items-center gap-2 text-xs text-mute">
           <span className="h-3 w-3 rotate-45 rounded-[2px] bg-brand" /> Milestone
@@ -149,7 +173,7 @@ export function Timeline({ phases, project }: { phases: Phase[]; project: Projec
                       className="absolute top-0 z-0 h-full w-px bg-brand-bright/40"
                       style={{ left: `${todayLeft}%` }}
                     />
-                    <Bar task={task} project={project} />
+                    <Bar task={task} project={project} asOf={project.asOf} />
                   </div>
                 </div>
               ))}

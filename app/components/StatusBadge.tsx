@@ -6,6 +6,8 @@ const STYLES: Record<Status, string> = {
   Active: "border-brand/60 text-brand-bright bg-brand/10",
   Upcoming: "border-black/12 text-faint bg-black/[0.02]",
   Overdue: "border-transparent text-white bg-brand",
+  Blocked: "border-transparent text-white bg-brand",
+  "On hold": "border-amber-500/50 text-amber-700 bg-amber-500/10",
 };
 
 export function StatusBadge({ status }: { status: Status }) {

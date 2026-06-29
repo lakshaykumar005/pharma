@@ -74,6 +74,7 @@ model Task {
   baselineEnd   String
   workDays      Int
   pct           Int
+  state         String       @default("ACTIVE") // ACTIVE | BLOCKED | ON_HOLD
   depType       String // "FS" | "FF"
   critical      Boolean      @default(false)
   order         Int          @default(0)

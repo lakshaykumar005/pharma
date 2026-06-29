@@ -9,10 +9,14 @@
 import { chromium } from "playwright";
 
 const BASE = process.env.E2E_BASE || "http://localhost:3000";
+const SHOTS = process.env.E2E_SHOTS; // optional dir for screenshots
 const results = [];
 const check = (name, cond) => {
   results.push(!!cond);
   console.log(`${cond ? "✓" : "✗ FAIL"}  ${name}`);
+};
+const shot = async (page, name) => {
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true });
 };
 
 async function signIn(browser, email, pw) {
@@ -35,6 +39,7 @@ try {
   const pub = await (await browser.newContext()).newPage();
   await pub.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
   check("Landing loads (public)", (await pub.textContent("body")).includes("Anthem Biosciences"));
+  await shot(pub, "qa-landing");
   check("Unauthenticated → /login", (await pathAfter(pub, "/dashboard")) === "/login");
 
   // viewer / client
@@ -52,13 +57,25 @@ try {
 
   // admin / manager
   const a = await signIn(browser, "admin@anthem.local", "anthem123");
+  await shot(a.page, "qa-dashboard");
   check("Manager can open /manage", (await pathAfter(a.page, "/manage")) === "/manage");
   check("Manage shows all panels", ["Tasks & assignments", "Onboard team", "Access", "Project settings"].every((t) => a.text?.includes?.(t) ?? true) && (await a.page.textContent("body")).includes("Project settings"));
+  await shot(a.page, "qa-manage");
   for (const id of ["plan", "timeline", "team", "activity"]) {
     await a.page.goto(`${BASE}/dashboard#${id}`, { waitUntil: "domcontentloaded" });
     check(`Dashboard #${id} renders`, (await a.page.locator(`#${id}`).count()) > 0);
   }
   check("Task profile renders", (await pathAfter(a.page, "/task/8")) === "/task/8");
+  await shot(a.page, "qa-task");
+  // new features
+  check("Alerts page renders", (await pathAfter(a.page, "/alerts")) === "/alerts" && (await a.page.textContent("body")).toLowerCase().includes("attention"));
+  await shot(a.page, "qa-alerts");
+  check("Report page renders", (await pathAfter(a.page, "/report")) === "/report" && (await a.page.textContent("body")).toLowerCase().includes("all tasks"));
+  await shot(a.page, "qa-report");
+  check("Account page renders", (await pathAfter(a.page, "/account")) === "/account" && (await a.page.textContent("body")).toLowerCase().includes("password"));
+  await shot(a.page, "qa-account");
+  const csv = await a.page.request.get(`${BASE}/api/export/tasks`);
+  check("CSV export downloads", csv.ok() && (csv.headers()["content-type"] || "").toLowerCase().includes("csv"));
   await a.ctx.close();
 } catch (err) {
   check(`No exception (${err.message})`, false);

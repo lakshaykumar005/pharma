@@ -51,10 +51,19 @@ export function overallProgress(tasks: Task[]): number {
   return Math.round((done / totalWork) * 100);
 }
 
-export type Status = "Complete" | "In progress" | "Active" | "Upcoming" | "Overdue";
+export type Status =
+  | "Complete"
+  | "In progress"
+  | "Active"
+  | "Upcoming"
+  | "Overdue"
+  | "Blocked"
+  | "On hold";
 
 export function statusOf(t: Task, asOf: string): Status {
   if (t.pct >= 100) return "Complete";
+  if (t.state === "BLOCKED") return "Blocked";
+  if (t.state === "ON_HOLD") return "On hold";
   const now = d(asOf).getTime();
   const start = d(t.start).getTime();
   const end = d(t.end).getTime();
@@ -62,6 +71,18 @@ export function statusOf(t: Task, asOf: string): Status {
   if (now > end) return "Overdue";
   if (now >= start && now <= end) return "Active";
   return "Upcoming";
+}
+
+/** Tasks needing attention, role-filtered. dueSoon = within `days`, not done. */
+export function computeAlerts(tasks: Task[], asOf: string, days = 7) {
+  const real = tasks.filter((t) => t.type === "T" && t.pct < 100);
+  const overdue = real.filter((t) => daysBetween(asOf, t.end) < 0);
+  const dueSoon = real.filter((t) => {
+    const dd = daysBetween(asOf, t.end);
+    return dd >= 0 && dd <= days;
+  });
+  const blocked = real.filter((t) => t.state === "BLOCKED");
+  return { overdue, dueSoon, blocked };
 }
 
 /** Position (0–100) of a date along the Gantt axis. */

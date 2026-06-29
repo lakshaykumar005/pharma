@@ -85,6 +85,21 @@ body {
   color: #fff;
 }
 
+/* print: show only the report sheet */
+@media print {
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+}
+
 /* hidden scrollbars (still scrollable) */
 * {
   scrollbar-width: none;

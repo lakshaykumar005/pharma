@@ -1,6 +1,6 @@
 import "server-only";
 import { prisma } from "./db";
-import { hashPassword } from "./password";
+import { hashPassword, verifyPassword } from "./password";
 import type { Role } from "./types";
 
 /* Prisma transaction client type (loose — avoids importing generated internals). */
@@ -89,6 +89,16 @@ export async function deleteSubtask(id: number) {
     const phasePct = await recomputePhase(tx, sub.task.phaseCode);
     return { id, taskId: sub.taskId, taskPct, phasePct };
   });
+}
+
+/** Set a task's working state (ACTIVE / BLOCKED / ON_HOLD). */
+export async function setTaskState(id: number, state: string) {
+  const valid = ["ACTIVE", "BLOCKED", "ON_HOLD"];
+  if (!valid.includes(state)) throw new Error("Invalid state");
+  const task = await prisma.task.findUnique({ where: { id } });
+  if (!task) throw new Error("Task not found");
+  await prisma.task.update({ where: { id }, data: { state } });
+  return { id, state, desc: task.description };
 }
 
 /** Add a comment / note to a task. */
@@ -287,6 +297,16 @@ export async function deleteUser(id: number, currentUserId: number) {
   }
   await prisma.user.delete({ where: { id } });
   return { id };
+}
+
+/** Self-service password change — verifies the current password first. */
+export async function changePassword(userId: number, oldPw: string, newPw: string) {
+  if (newPw.length < 6) throw new Error("New password must be at least 6 characters");
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("User not found");
+  if (!verifyPassword(oldPw, user.passwordHash)) throw new Error("Current password is incorrect");
+  await prisma.user.update({ where: { id: userId }, data: { passwordHash: hashPassword(newPw) } });
+  return { ok: true };
 }
 
 /* ------------------------------ project ---------------------------------- */

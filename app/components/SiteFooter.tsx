@@ -41,6 +41,11 @@ export function SiteFooter({ project: PROJECT }: { project: ProjectMeta }) {
                   Departments & Team
                 </Link>
               </li>
+              <li>
+                <Link href="/report" className="hover:text-ink">
+                  Report &amp; export
+                </Link>
+              </li>
             </ul>
           </div>
 

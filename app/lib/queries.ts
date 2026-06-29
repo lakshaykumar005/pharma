@@ -27,6 +27,7 @@ type TaskRow = {
   baselineEnd: string;
   workDays: number;
   pct: number;
+  state: string;
   depType: string;
   phaseCode: string;
   critical: boolean;
@@ -47,6 +48,7 @@ function mapTask(t: TaskRow): Task {
     baselineEnd: t.baselineEnd,
     workDays: t.workDays,
     pct: t.pct,
+    state: (t.state as Task["state"]) ?? "ACTIVE",
     deps: (t.predecessors ?? []).map((d) => d.dependsOnId).sort((a, b) => a - b),
     depType: t.depType as DepType,
     phaseCode: t.phaseCode,

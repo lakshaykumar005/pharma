@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getTaskDetail } from "@/app/lib/queries";
-import { updateTaskProgress } from "@/app/lib/mutations";
+import { updateTaskProgress, setTaskState } from "@/app/lib/mutations";
 import { logActivity } from "@/app/lib/activity";
 import { checkOrigin, requireAuth, requireEditor } from "@/app/lib/api-guard";
 
@@ -35,23 +35,34 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
+  const state = (body as { state?: unknown })?.state;
   const pct = (body as { pct?: unknown })?.pct;
-  if (typeof pct !== "number" || !Number.isFinite(pct) || pct < 0 || pct > 100) {
-    return NextResponse.json({ error: "Body must include { pct: number } in 0–100" }, { status: 400 });
-  }
 
   try {
-    const result = await updateTaskProgress(taskId, pct);
-    await logActivity({
-      actor: guard.user.name,
-      verb: result.pct >= 100 ? "completed" : "updated progress on",
-      target: result.desc,
-      detail: result.pct >= 100 ? undefined : `to ${result.pct}%`,
-      taskId,
-    });
-    revalidatePath("/dashboard");
-    revalidatePath(`/task/${taskId}`);
-    return NextResponse.json({ ok: true, ...result });
+    // State change (ACTIVE / BLOCKED / ON_HOLD)
+    if (typeof state === "string") {
+      const result = await setTaskState(taskId, state);
+      const label = state === "BLOCKED" ? "marked blocked" : state === "ON_HOLD" ? "put on hold" : "resumed";
+      await logActivity({ actor: guard.user.name, verb: label, target: result.desc, taskId });
+      revalidatePath("/dashboard");
+      revalidatePath(`/task/${taskId}`);
+      return NextResponse.json({ ok: true, ...result });
+    }
+    // Progress change
+    if (typeof pct === "number" && Number.isFinite(pct) && pct >= 0 && pct <= 100) {
+      const result = await updateTaskProgress(taskId, pct);
+      await logActivity({
+        actor: guard.user.name,
+        verb: result.pct >= 100 ? "completed" : "updated progress on",
+        target: result.desc,
+        detail: result.pct >= 100 ? undefined : `to ${result.pct}%`,
+        taskId,
+      });
+      revalidatePath("/dashboard");
+      revalidatePath(`/task/${taskId}`);
+      return NextResponse.json({ ok: true, ...result });
+    }
+    return NextResponse.json({ error: "Body must include { pct: 0–100 } or { state }" }, { status: 400 });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Update failed";
     const status = msg.includes("not found") ? 404 : 400;
