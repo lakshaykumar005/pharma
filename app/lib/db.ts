@@ -9,9 +9,13 @@ import { PrismaPg } from "@prisma/adapter-pg";
 function createClient() {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
-    throw new Error("DATABASE_URL is not set — add your Supabase pooled connection string to .env");
+    throw new Error("DATABASE_URL is not set — add your Supabase transaction-pooler URL to .env");
   }
-  const adapter = new PrismaPg({ connectionString });
+  // Cap the node-postgres pool size per instance. The `connection_limit` URL
+  // param is ignored by the driver adapter, so we set pg's `max` here to keep
+  // serverless instances from exhausting the Supabase transaction pooler.
+  const max = Number(process.env.DATABASE_POOL_MAX ?? 1);
+  const adapter = new PrismaPg({ connectionString, max });
   return new PrismaClient({ adapter });
 }
 
