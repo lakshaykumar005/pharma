@@ -22,12 +22,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
   const title = (body as { title?: unknown })?.title;
+  const assignee = typeof (body as { assignee?: unknown })?.assignee === "string" ? (body as { assignee: string }).assignee : null;
   if (typeof title !== "string" || !title.trim()) {
     return NextResponse.json({ error: "Body must include a non-empty { title }" }, { status: 400 });
   }
 
   try {
-    const result = await addSubtask(Number(id), title);
+    const result = await addSubtask(Number(id), title, assignee);
     await logActivity({
       actor: guard.user.name,
       verb: "added subtask",

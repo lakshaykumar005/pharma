@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, canEdit, canEditTask } from "@/app/lib/auth";
-import { getTaskDetail, getProject } from "@/app/lib/queries";
+import { getTaskDetail, getProject, getTeam } from "@/app/lib/queries";
 import { type Task, DEPARTMENT_NAMES } from "@/app/lib/types";
 import { fmtLong, fmtShort, statusOf } from "@/app/lib/helpers";
 import { ProgressRing } from "@/app/components/ProgressRing";
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function TaskPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await requireUser(`/task/${id}`);
-  const [detail, project] = await Promise.all([getTaskDetail(Number(id)), getProject()]);
+  const [detail, project, team] = await Promise.all([getTaskDetail(Number(id)), getProject(), getTeam()]);
   if (!detail) notFound();
 
   const { task, phase, dept, predecessors, successors, prev, next } = detail;
@@ -183,7 +183,7 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
       {/* subtasks (only for tasks, not milestones) */}
       {!isMilestone && (
         <div className="mt-5">
-          <Subtasks taskId={task.id} initial={task.subtasks} canEdit={canWork} />
+          <Subtasks taskId={task.id} initial={task.subtasks} canEdit={canWork} team={team.map((m) => m.name)} />
         </div>
       )}
 

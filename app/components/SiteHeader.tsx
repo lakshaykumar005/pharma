@@ -221,6 +221,13 @@ export function SiteHeader({
               Account
             </Link>
             <Link
+              href="/assignments"
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-3 py-3 text-base font-medium text-mute"
+            >
+              Who&apos;s on what
+            </Link>
+            <Link
               href="/report"
               onClick={() => setOpen(false)}
               className="rounded-lg px-3 py-3 text-base font-medium text-mute"

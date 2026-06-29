@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { setSubtaskDone, deleteSubtask } from "@/app/lib/mutations";
+import { setSubtaskDone, deleteSubtask, setSubtaskAssignee } from "@/app/lib/mutations";
 import { logActivity } from "@/app/lib/activity";
 import { checkOrigin, requireSubtaskEditor } from "@/app/lib/api-guard";
 
@@ -22,11 +22,29 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
   const done = (body as { done?: unknown })?.done;
-  if (typeof done !== "boolean") {
-    return NextResponse.json({ error: "Body must include { done: boolean }" }, { status: 400 });
-  }
+  const hasAssignee = body !== null && typeof body === "object" && "assignee" in body;
 
   try {
+    // Assignee change — who's working on this subtask
+    if (hasAssignee) {
+      const raw = (body as { assignee?: unknown }).assignee;
+      const assignee = typeof raw === "string" ? raw : null;
+      const result = await setSubtaskAssignee(Number(id), assignee);
+      await logActivity({
+        actor: guard.user.name,
+        verb: assignee ? "assigned subtask" : "unassigned subtask",
+        target: result.title,
+        detail: assignee ? `to ${assignee}` : undefined,
+        taskId: result.taskId,
+      });
+      revalidatePath(`/task/${result.taskId}`);
+      revalidatePath("/assignments");
+      return NextResponse.json({ ok: true, ...result });
+    }
+    // Done toggle
+    if (typeof done !== "boolean") {
+      return NextResponse.json({ error: "Body must include { done: boolean } or { assignee }" }, { status: 400 });
+    }
     const result = await setSubtaskDone(Number(id), done);
     await logActivity({
       actor: guard.user.name,

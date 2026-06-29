@@ -103,6 +103,13 @@ try {
       (await a.page.textContent("body")).includes("Phase plan"),
   );
   await shot(a.page, "qa-phase");
+  // who's-on-what assignments board
+  check(
+    "Assignments board renders",
+    (await pathAfter(a.page, "/assignments")) === "/assignments" &&
+      (await a.page.textContent("body")).includes("on what"),
+  );
+  await shot(a.page, "qa-assignments");
   // new features
   check("Alerts page renders", (await pathAfter(a.page, "/alerts")) === "/alerts" && (await a.page.textContent("body")).toLowerCase().includes("attention"));
   await shot(a.page, "qa-alerts");

@@ -113,6 +113,7 @@ model Subtask {
   title     String
   done      Boolean  @default(false)
   order     Int      @default(0)
+  assignee  String? // team member name working on this subtask; null = unassigned
   taskId    Int
   task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())

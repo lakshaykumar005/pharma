@@ -231,11 +231,22 @@ function TimelineSection({ phases, project }: { phases: Phase[]; project: Projec
 function TeamSection({ departments, team }: { departments: Department[]; team: Member[] }) {
   return (
     <section id="team" className="scroll-mt-24 pt-20">
-      <SectionHead
-        kicker="04 · Departments & Team"
-        title="Who's on site"
-        desc="Five departments, six engineers, one project lead — delivering across all three lines."
-      />
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <SectionHead
+          kicker="04 · Departments & Team"
+          title="Who's on site"
+          desc="Five departments, six engineers, one project lead — delivering across all three lines."
+        />
+        <Reveal>
+          <Link
+            href="/assignments"
+            className="inline-flex items-center gap-2 rounded-full border border-black/12 px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:border-brand/40 hover:text-brand"
+          >
+            See who&apos;s on what
+            <span aria-hidden>→</span>
+          </Link>
+        </Reveal>
+      </div>
 
       <div className="mt-10 grid gap-5 lg:grid-cols-[1fr_1.1fr]">
         {/* departments */}

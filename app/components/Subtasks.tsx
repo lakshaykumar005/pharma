@@ -4,18 +4,23 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Subtask } from "@/app/lib/types";
 
+const initials = (n: string) => n.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+
 export function Subtasks({
   taskId,
   initial,
   canEdit,
+  team = [],
 }: {
   taskId: number;
   initial: Subtask[];
   canEdit: boolean;
+  team?: string[];
 }) {
   const router = useRouter();
   const [items, setItems] = useState<Subtask[]>(initial);
   const [title, setTitle] = useState("");
+  const [newAssignee, setNewAssignee] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,6 +47,25 @@ export function Subtasks({
     }
   }
 
+  async function assign(s: Subtask, value: string) {
+    const who = value || null;
+    const prev = items;
+    setItems((p) => p.map((x) => (x.id === s.id ? { ...x, assignee: who } : x)));
+    setError(null);
+    try {
+      const res = await fetch(`/api/subtasks/${s.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ assignee: who }),
+      });
+      if (!res.ok) throw new Error();
+      router.refresh();
+    } catch {
+      setItems(prev);
+      setError("Couldn't reassign — try again.");
+    }
+  }
+
   async function add(e: React.FormEvent) {
     e.preventDefault();
     const clean = title.trim();
@@ -52,12 +76,13 @@ export function Subtasks({
       const res = await fetch(`/api/tasks/${taskId}/subtasks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: clean }),
+        body: JSON.stringify({ title: clean, assignee: newAssignee || null }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      setItems((prev) => [...prev, { id: data.subtask.id, title: clean, done: false, order: prev.length }]);
+      setItems((prev) => [...prev, { id: data.subtask.id, title: clean, done: false, order: prev.length, assignee: newAssignee || null }]);
       setTitle("");
+      setNewAssignee("");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't add subtask.");
@@ -80,6 +105,9 @@ export function Subtasks({
       setError("Couldn't remove — try again.");
     }
   }
+
+  const selectCls =
+    "shrink-0 rounded-md border border-black/12 bg-black/[0.03] px-2 py-1 text-[0.7rem] text-ink outline-none focus:border-brand/60";
 
   return (
     <div className="card p-6">
@@ -126,9 +154,36 @@ export function Subtasks({
                 <path d="M20 6 9 17l-5-5" />
               </svg>
             </button>
-            <span className={`flex-1 text-sm ${s.done ? "text-faint line-through" : "text-ink/90"}`}>
+            <span className={`min-w-0 flex-1 text-sm ${s.done ? "text-faint line-through" : "text-ink/90"}`}>
               {s.title}
             </span>
+
+            {/* assignee — who's working on this subtask */}
+            {canEdit ? (
+              <select
+                value={s.assignee ?? ""}
+                onChange={(e) => assign(s, e.target.value)}
+                className={selectCls}
+                aria-label="Assign subtask"
+              >
+                <option value="">Unassigned</option>
+                {team.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            ) : s.assignee ? (
+              <span className="flex shrink-0 items-center gap-1.5 text-[0.7rem] text-mute">
+                <span className="grid h-5 w-5 place-items-center rounded-full bg-black/8 font-mono text-[0.5rem] text-ink">
+                  {initials(s.assignee)}
+                </span>
+                {s.assignee}
+              </span>
+            ) : (
+              <span className="shrink-0 text-[0.7rem] text-faint">Unassigned</span>
+            )}
+
             {canEdit && (
               <button
                 type="button"
@@ -151,14 +206,27 @@ export function Subtasks({
       </ul>
 
       {canEdit && (
-        <form onSubmit={add} className="mt-3 flex gap-2">
+        <form onSubmit={add} className="mt-3 flex flex-wrap gap-2">
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Add a subtask…"
             maxLength={160}
-            className="flex-1 rounded-lg border border-black/12 bg-black/[0.03] px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-brand/60"
+            className="min-w-0 flex-1 rounded-lg border border-black/12 bg-black/[0.03] px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-brand/60"
           />
+          <select
+            value={newAssignee}
+            onChange={(e) => setNewAssignee(e.target.value)}
+            className="shrink-0 rounded-lg border border-black/12 bg-black/[0.03] px-2 py-2.5 text-sm text-ink outline-none focus:border-brand/60"
+            aria-label="Assign to"
+          >
+            <option value="">Unassigned</option>
+            {team.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
           <button
             type="submit"
             disabled={!title.trim() || busy}

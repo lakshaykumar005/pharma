@@ -63,6 +63,7 @@ export interface Subtask {
   title: string;
   done: boolean;
   order: number;
+  assignee: string | null;
 }
 
 export interface Task {

@@ -44,11 +44,12 @@ export async function updateTaskProgress(id: number, pct: number) {
   });
 }
 
-export async function addSubtask(taskId: number, title: string) {
+export async function addSubtask(taskId: number, title: string, assignee?: string | null) {
   const clean = title.trim();
   if (!Number.isInteger(taskId)) throw new Error("Invalid task id");
   if (!clean) throw new Error("Subtask title is required");
   if (clean.length > 160) throw new Error("Subtask title too long");
+  const who = (assignee ?? "").trim() || null;
 
   const task = await prisma.task.findUnique({ where: { id: taskId } });
   if (!task) throw new Error("Task not found");
@@ -57,12 +58,22 @@ export async function addSubtask(taskId: number, title: string) {
   return prisma.$transaction(async (tx) => {
     const max = await tx.subtask.aggregate({ where: { taskId }, _max: { order: true } });
     const created = await tx.subtask.create({
-      data: { taskId, title: clean, order: (max._max.order ?? -1) + 1 },
+      data: { taskId, title: clean, order: (max._max.order ?? -1) + 1, assignee: who },
     });
     await recomputeTaskFromSubtasks(tx, taskId);
     const phasePct = await recomputePhase(tx, task.phaseCode);
     return { subtask: created, phaseCode: task.phaseCode, phasePct };
   });
+}
+
+/** Assign (or clear) the team member working on a subtask. */
+export async function setSubtaskAssignee(id: number, assignee: string | null) {
+  if (!Number.isInteger(id)) throw new Error("Invalid subtask id");
+  const who = (assignee ?? "").trim() || null;
+  const sub = await prisma.subtask.findUnique({ where: { id } });
+  if (!sub) throw new Error("Subtask not found");
+  await prisma.subtask.update({ where: { id }, data: { assignee: who } });
+  return { id, assignee: who, title: sub.title, taskId: sub.taskId };
 }
 
 export async function setSubtaskDone(id: number, done: boolean) {

@@ -36,7 +36,7 @@ type TaskRow = {
   phaseCode: string;
   critical: boolean;
   predecessors?: { dependsOnId: number }[];
-  subtasks?: { id: number; title: string; done: boolean; order: number }[];
+  subtasks?: { id: number; title: string; done: boolean; order: number; assignee: string | null }[];
 };
 
 function mapTask(t: TaskRow): Task {
@@ -61,7 +61,7 @@ function mapTask(t: TaskRow): Task {
     depType: t.depType as DepType,
     phaseCode: t.phaseCode,
     critical: t.critical,
-    subtasks: (t.subtasks ?? []).map((s) => ({ id: s.id, title: s.title, done: s.done, order: s.order })),
+    subtasks: (t.subtasks ?? []).map((s) => ({ id: s.id, title: s.title, done: s.done, order: s.order, assignee: s.assignee ?? null })),
   };
 }
 
