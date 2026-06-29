@@ -87,6 +87,14 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
                   {n.label}
                 </Link>
               ))}
+              {(user.role === "ADMIN" || user.role === "EDITOR") && (
+                <Link
+                  href="/manage"
+                  className="rounded-full px-3.5 py-2 text-sm font-medium text-mute transition-colors hover:text-brand"
+                >
+                  Manage
+                </Link>
+              )}
             </nav>
 
             {/* desktop user menu */}
@@ -156,6 +164,15 @@ export function SiteHeader({ asOf, user }: { asOf: string; user: SessionUser | n
                 {n.label}
               </Link>
             ))}
+            {(user.role === "ADMIN" || user.role === "EDITOR") && (
+              <Link
+                href="/manage"
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-3 text-base font-medium text-mute"
+              >
+                Manage
+              </Link>
+            )}
             <div className="mt-2 flex items-center justify-between border-t border-black/10 pt-3">
               <span className="flex items-center gap-2">
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-brand/20 font-mono text-[0.62rem] text-brand-bright">

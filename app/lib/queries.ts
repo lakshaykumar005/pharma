@@ -187,3 +187,41 @@ export async function getAllTaskIds(): Promise<number[]> {
   const rows = await prisma.task.findMany({ select: { id: true }, orderBy: { order: "asc" } });
   return rows.map((r) => r.id);
 }
+
+export interface MemberRow {
+  id: number;
+  name: string;
+  title: string;
+  role: RoleCode;
+  lead: boolean;
+}
+
+export async function getTeamWithIds(): Promise<MemberRow[]> {
+  const rows = await prisma.member.findMany({ orderBy: { order: "asc" } });
+  return rows.map((m) => ({
+    id: m.id,
+    name: m.name,
+    title: m.title,
+    role: m.roleCode as RoleCode,
+    lead: m.lead,
+  }));
+}
+
+export interface UserRow {
+  id: number;
+  email: string;
+  name: string;
+  role: string;
+  createdAt: string;
+}
+
+export async function getUsers(): Promise<UserRow[]> {
+  const rows = await prisma.user.findMany({ orderBy: { createdAt: "asc" } });
+  return rows.map((u) => ({
+    id: u.id,
+    email: u.email,
+    name: u.name,
+    role: u.role,
+    createdAt: u.createdAt.toISOString().slice(0, 10),
+  }));
+}
