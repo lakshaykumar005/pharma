@@ -101,16 +101,20 @@ export function SiteHeader({
                   {n.label}
                 </Link>
               ))}
+              <span className="mx-1.5 h-5 w-px bg-black/10" />
+              <Link
+                href="/tasks"
+                className="whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-mute transition-colors hover:text-brand"
+              >
+                Tasks
+              </Link>
               {(user.role === "ADMIN" || user.role === "EDITOR") && (
-                <>
-                  <span className="mx-1.5 h-5 w-px bg-black/10" />
-                  <Link
-                    href="/my-tasks"
-                    className="whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-mute transition-colors hover:text-brand"
-                  >
-                    My work
-                  </Link>
-                </>
+                <Link
+                  href="/my-tasks"
+                  className="whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-mute transition-colors hover:text-brand"
+                >
+                  My work
+                </Link>
               )}
               {user.role === "ADMIN" && (
                 <Link
@@ -139,7 +143,7 @@ export function SiteHeader({
                   </span>
                 )}
               </Link>
-              <span className="chip border-brand/40 text-brand-bright">
+              <span className="chip hidden border-brand/40 text-brand-bright xl:inline-flex">
                 <span className="h-1.5 w-1.5 rounded-full bg-brand-bright animate-[blink_1.6s_ease-in-out_infinite]" />
                 Live · {asOf}
               </span>
@@ -209,6 +213,13 @@ export function SiteHeader({
                 {n.label}
               </Link>
             ))}
+            <Link
+              href="/tasks"
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-3 py-3 text-base font-medium text-mute"
+            >
+              Tasks
+            </Link>
             <Link
               href="/alerts"
               onClick={() => setOpen(false)}

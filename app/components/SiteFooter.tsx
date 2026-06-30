@@ -26,6 +26,11 @@ export function SiteFooter({ project: PROJECT }: { project: ProjectMeta }) {
             <p className="mono-label">Programme</p>
             <ul className="mt-4 space-y-2 text-sm text-mute">
               <li>
+                <Link href="/tasks" className="hover:text-ink">
+                  Tasks
+                </Link>
+              </li>
+              <li>
                 <Link href="/dashboard#workstreams" className="hover:text-ink">
                   Workstreams
                 </Link>
