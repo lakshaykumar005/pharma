@@ -44,9 +44,9 @@ export default async function LoginPage({
           <div className="mt-7 rounded-xl border border-black/8 bg-black/[0.02] p-4">
             <p className="mono-label">Demo access</p>
             <ul className="mt-2 space-y-1 font-mono text-[0.72rem] text-mute">
-              <li>admin@anthem.local · anthem123 <span className="text-faint">(full edit)</span></li>
-              <li>editor@anthem.local · editor123 <span className="text-faint">(edit)</span></li>
-              <li>viewer@anthem.local · viewer123 <span className="text-faint">(read-only)</span></li>
+              <li>admin@aapaavani.com · anthem123 <span className="text-faint">(full edit)</span></li>
+              <li>editor@aapaavani.com · editor123 <span className="text-faint">(edit)</span></li>
+              <li>viewer@aapaavani.com · viewer123 <span className="text-faint">(read-only)</span></li>
             </ul>
           </div>
         </div>

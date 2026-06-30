@@ -10,9 +10,8 @@ export function SiteFooter({ project: PROJECT }: { project: ProjectMeta }) {
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-md bg-brand font-display text-2xl text-white">
-                A
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/aapaavani-mark.svg" alt="Aapaavani Environmental Solutions" width={40} height={40} className="h-10 w-10 rounded-md" />
               <span className="font-display text-2xl tracking-wide text-ink">
                 {PROJECT.builder}
               </span>

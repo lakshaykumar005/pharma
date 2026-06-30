@@ -351,7 +351,7 @@ export default async function ManagePage({
           <form action={createUserAction} className="card mt-3 grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-6">
             <div className="lg:col-span-2">
               <label className={label}>Email</label>
-              <input name="email" type="email" required placeholder="name@anthem.local" className={input} />
+              <input name="email" type="email" required placeholder="name@aapaavani.com" className={input} />
             </div>
             <div>
               <label className={label}>Name</label>

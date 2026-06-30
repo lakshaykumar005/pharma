@@ -17,7 +17,7 @@ export function LoginForm({ from }: { from: string }) {
           type="email"
           autoComplete="username"
           required
-          placeholder="you@anthem.local"
+          placeholder="you@aapaavani.com"
           className="mt-2 w-full rounded-xl border border-black/12 bg-black/[0.03] px-4 py-3 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-brand/60"
         />
       </label>

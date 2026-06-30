@@ -291,15 +291,11 @@ function TeamSection({ departments, team }: { departments: Department[]; team: M
                       .slice(0, 2)}
                   </span>
                   <div className="min-w-0">
-                    <p className="flex items-center gap-2 truncate text-sm font-semibold text-ink">
-                      {m.name}
-                      {m.lead && (
-                        <span className="rounded bg-brand px-1.5 py-0.5 font-mono text-[0.5rem] uppercase tracking-widest text-white">
-                          Lead
-                        </span>
-                      )}
+                    <p className="truncate text-sm font-semibold text-ink">{m.name}</p>
+                    <p className="truncate text-xs text-mute">
+                      {m.title}
+                      {m.lead && <span className="text-brand"> · Lead</span>}
                     </p>
-                    <p className="truncate text-xs text-mute">{m.title}</p>
                   </div>
                   <span className="ml-auto">
                     <RoleBadge code={m.role} />

@@ -77,9 +77,9 @@ const SUBTASKS: Record<number, { title: string; done: boolean }[]> = {
 };
 
 const USERS = [
-  { email: "admin@anthem.local", name: "Keerthan Gowda", role: "ADMIN", department: "PRO", password: "anthem123" },
-  { email: "editor@anthem.local", name: "Rahul Karkera", role: "EDITOR", department: "DES", password: "editor123" },
-  { email: "viewer@anthem.local", name: "Site Viewer", role: "VIEWER", department: null, password: "viewer123" },
+  { email: "admin@aapaavani.com", name: "Keerthan Gowda", role: "ADMIN", department: "PRO", password: "anthem123" },
+  { email: "editor@aapaavani.com", name: "Rahul Karkera", role: "EDITOR", department: "DES", password: "editor123" },
+  { email: "viewer@aapaavani.com", name: "Site Viewer", role: "VIEWER", department: null, password: "viewer123" },
 ];
 
 const PHASES = [

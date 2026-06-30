@@ -81,12 +81,12 @@ export function SiteHeader({
         {user ? (
           <>
             {/* desktop nav */}
-            <nav className="hidden items-center gap-1 md:flex">
+            <nav className="hidden items-center gap-0.5 lg:flex">
               {NAV.map((n) => (
                 <Link
                   key={n.id}
                   href={n.href}
-                  className={`relative rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
+                  className={`relative whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors ${
                     active === n.id ? "text-ink" : "text-mute hover:text-ink"
                   }`}
                 >
@@ -97,17 +97,20 @@ export function SiteHeader({
                 </Link>
               ))}
               {(user.role === "ADMIN" || user.role === "EDITOR") && (
-                <Link
-                  href="/my-tasks"
-                  className="rounded-full px-3.5 py-2 text-sm font-medium text-mute transition-colors hover:text-brand"
-                >
-                  My work
-                </Link>
+                <>
+                  <span className="mx-1.5 h-5 w-px bg-black/10" />
+                  <Link
+                    href="/my-tasks"
+                    className="whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-mute transition-colors hover:text-brand"
+                  >
+                    My work
+                  </Link>
+                </>
               )}
               {user.role === "ADMIN" && (
                 <Link
                   href="/manage"
-                  className="rounded-full px-3.5 py-2 text-sm font-medium text-mute transition-colors hover:text-brand"
+                  className="whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-mute transition-colors hover:text-brand"
                 >
                   Manage
                 </Link>
@@ -115,7 +118,7 @@ export function SiteHeader({
             </nav>
 
             {/* desktop user menu */}
-            <div className="hidden items-center gap-3 md:flex">
+            <div className="hidden items-center gap-2.5 lg:flex">
               <Link
                 href="/alerts"
                 aria-label={`Alerts${alertCount ? ` (${alertCount})` : ""}`}
@@ -165,7 +168,7 @@ export function SiteHeader({
               aria-label="Toggle menu"
               aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
-              className="grid h-10 w-10 place-items-center rounded-lg border border-black/10 bg-black/[0.03] md:hidden"
+              className="grid h-10 w-10 place-items-center rounded-lg border border-black/10 bg-black/[0.03] lg:hidden"
             >
               <span className="relative block h-3.5 w-5">
                 <span className={`absolute left-0 h-0.5 w-5 rounded bg-ink transition-all ${open ? "top-1.5 rotate-45" : "top-0"}`} />
@@ -184,7 +187,7 @@ export function SiteHeader({
       {/* mobile menu */}
       {user && (
         <div
-          className={`overflow-hidden border-t border-black/10 bg-canvas/95 backdrop-blur-xl transition-[max-height] duration-300 md:hidden ${
+          className={`overflow-hidden border-t border-black/10 bg-canvas/95 backdrop-blur-xl transition-[max-height] duration-300 lg:hidden ${
             open ? "max-h-96" : "max-h-0 border-transparent"
           }`}
         >

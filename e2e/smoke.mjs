@@ -43,7 +43,7 @@ try {
   check("Unauthenticated → /login", (await pathAfter(pub, "/dashboard")) === "/login");
 
   // viewer / client
-  const v = await signIn(browser, "viewer@anthem.local", "viewer123");
+  const v = await signIn(browser, "viewer@aapaavani.com", "viewer123");
   check("Client signs in", true);
   check("Client blocked from /manage", (await pathAfter(v.page, "/manage")) === "/dashboard");
   check("Client blocked from /my-tasks", (await pathAfter(v.page, "/my-tasks")) === "/dashboard");
@@ -55,7 +55,7 @@ try {
   await v.ctx.close();
 
   // editor / engineer (Rahul Karkera · Design department)
-  const e = await signIn(browser, "editor@anthem.local", "editor123");
+  const e = await signIn(browser, "editor@aapaavani.com", "editor123");
   check("Engineer can open /my-tasks", (await pathAfter(e.page, "/my-tasks")) === "/my-tasks");
   check("Engineer blocked from /manage", (await pathAfter(e.page, "/manage")) === "/dashboard");
   // department-scoped RBAC: an engineer can't write to a task outside their dept (negative, no write)
@@ -82,7 +82,7 @@ try {
   await e.ctx.close();
 
   // admin / manager
-  const a = await signIn(browser, "admin@anthem.local", "anthem123");
+  const a = await signIn(browser, "admin@aapaavani.com", "anthem123");
   await shot(a.page, "qa-dashboard");
   check("Manager can open /manage", (await pathAfter(a.page, "/manage")) === "/manage");
   {

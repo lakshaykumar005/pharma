@@ -48,9 +48,9 @@ export default async function AssignmentsPage() {
                   {initials(m.name)}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="flex items-center gap-2 truncate text-sm font-semibold text-ink">
+                  <p className="truncate text-sm font-semibold text-ink">
                     {m.name}
-                    {m.lead && <span className="rounded bg-brand px-1.5 py-0.5 font-mono text-[0.5rem] uppercase tracking-widest text-white">Lead</span>}
+                    {m.lead && <span className="text-brand"> · Lead</span>}
                   </p>
                   <p className="truncate text-xs text-mute">{m.title} · {DEPARTMENT_NAMES[m.role]}</p>
                 </div>
