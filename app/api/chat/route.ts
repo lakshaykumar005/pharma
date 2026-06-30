@@ -8,7 +8,8 @@ import { checkOrigin, requireAuth } from "@/app/lib/api-guard";
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+// gemini-flash-latest currently resolves to Gemini 3.5 Flash.
+const MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
 const HISTORY_LIMIT = 40;
 
 const textOf = (m: UIMessage): string =>
@@ -68,6 +69,13 @@ export async function POST(req: Request) {
     model: google(MODEL),
     system,
     messages: modelMessages,
+    // Answers are grounded in the injected task data, so we don't need the
+    // model's deep "thinking" pass — disabling it makes replies fast and cheap
+    // (your test burned 381 thinking tokens on a 12-token answer). Raise the
+    // budget if you want more reasoning.
+    providerOptions: {
+      google: { thinkingConfig: { thinkingBudget: 0, includeThoughts: false } },
+    },
     onFinish: async ({ text }) => {
       const clean = (text ?? "").trim();
       if (clean) {
