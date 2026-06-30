@@ -66,12 +66,17 @@ export function SiteHeader({
 
       <div className="mx-auto flex h-[68px] max-w-[1240px] items-center justify-between gap-4 px-4 sm:px-6">
         {/* lockup */}
-        <Link href="/dashboard" className="group flex items-center gap-3" onClick={() => setOpen(false)}>
-          <span className="grid h-9 w-9 place-items-center rounded-md bg-brand font-display text-xl text-white shadow-[0_6px_20px_-8px_rgba(236,28,43,0.9)] transition-transform group-hover:scale-105">
-            AB
-          </span>
-          <span className="leading-none">
-            <span className="block font-mono text-[0.62rem] uppercase tracking-[0.2em] text-faint">
+        <Link href="/dashboard" className="group flex items-center gap-2.5" onClick={() => setOpen(false)}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/aapaavani-mark.png"
+            alt="Aapaavani"
+            width={34}
+            height={34}
+            className="h-[34px] w-[34px] object-contain transition-transform group-hover:scale-105"
+          />
+          <span className="border-l border-black/12 pl-2.5 leading-none">
+            <span className="block font-mono text-[0.6rem] uppercase tracking-[0.2em] text-faint">
               Anthem Biosciences
             </span>
             <span className="block text-sm font-semibold tracking-tight text-ink">Command Center</span>

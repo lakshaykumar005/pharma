@@ -23,10 +23,9 @@ export default async function LoginPage({
         <div className="h-1 w-full bg-gradient-to-r from-brand-deep via-brand to-brand-bright" />
         <div className="p-7 sm:p-9">
           <div className="flex items-center gap-3">
-            <span className="grid h-10 w-10 place-items-center rounded-md bg-brand font-display text-xl text-white">
-              AB
-            </span>
-            <div className="leading-none">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/aapaavani-mark.png" alt="Aapaavani" width={40} height={40} className="h-10 w-10 object-contain" />
+            <div className="border-l border-black/12 pl-3 leading-none">
               <p className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-faint">
                 {project.client}
               </p>

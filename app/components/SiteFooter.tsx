@@ -11,7 +11,7 @@ export function SiteFooter({ project: PROJECT }: { project: ProjectMeta }) {
           <div>
             <div className="flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/aapaavani-mark.svg" alt="Aapaavani Environmental Solutions" width={40} height={40} className="h-10 w-10 rounded-md" />
+              <img src="/aapaavani-mark.png" alt="Aapaavani Environmental Solutions" width={44} height={44} className="h-11 w-11 object-contain" />
               <span className="font-display text-2xl tracking-wide text-ink">
                 {PROJECT.builder}
               </span>

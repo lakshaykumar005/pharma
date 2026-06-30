@@ -21,8 +21,24 @@ const bebas = Bebas_Neue({
 });
 
 export const metadata: Metadata = {
-  title: "Anthem Biosciences Limited — Project Command Center",
-  description: "ETP Demonstration programme status, tracked live by Aapaavani Environmental Solutions.",
+  metadataBase: new URL("https://anthem-aapaavani.vercel.app"),
+  title: "Anthem Biosciences — Project Command Center",
+  description:
+    "Live ETP Demonstration programme tracker by Aapaavani Environmental Solutions — plan, timeline, team and client sign-off in one place.",
+  applicationName: "Anthem Command Center",
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Anthem Command Center",
+    title: "Anthem Biosciences — Project Command Center",
+    description:
+      "Live ETP Demonstration programme tracker by Aapaavani Environmental Solutions — plan, timeline, team and client sign-off.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Anthem Biosciences — Project Command Center",
+    description: "Live ETP Demonstration programme tracker by Aapaavani Environmental Solutions.",
+  },
 };
 
 export const viewport: Viewport = {
