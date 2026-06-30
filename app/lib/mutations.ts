@@ -98,7 +98,7 @@ export async function deleteSubtask(id: number) {
     await tx.subtask.delete({ where: { id } });
     const taskPct = await recomputeTaskFromSubtasks(tx, sub.taskId);
     const phasePct = await recomputePhase(tx, sub.task.phaseCode);
-    return { id, taskId: sub.taskId, taskPct, phasePct };
+    return { id, taskId: sub.taskId, taskPct, phasePct, title: sub.title };
   });
 }
 

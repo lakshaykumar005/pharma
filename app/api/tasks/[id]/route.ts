@@ -1,24 +1,12 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { getTaskDetail } from "@/app/lib/queries";
 import { updateTaskProgress, setTaskState } from "@/app/lib/mutations";
 import { logActivity } from "@/app/lib/activity";
-import { checkOrigin, requireAuth, requireTaskEditor } from "@/app/lib/api-guard";
+import { checkOrigin, requireTaskEditor } from "@/app/lib/api-guard";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/tasks/:id — one task with phase, department, dependencies, neighbours.
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const guard = await requireAuth();
-  if ("res" in guard) return guard.res;
-
-  const { id } = await params;
-  const detail = await getTaskDetail(Number(id));
-  if (!detail) return NextResponse.json({ error: "Task not found" }, { status: 404 });
-  return NextResponse.json(detail);
-}
-
-// PATCH /api/tasks/:id — update % complete; rolls up to phase + milestone.
+// PATCH /api/tasks/:id — update % complete or working state; rolls up to phase + milestone.
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const origin = checkOrigin(req);
   if (origin) return origin;

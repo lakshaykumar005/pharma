@@ -72,6 +72,12 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 
   try {
     const result = await deleteSubtask(Number(id));
+    await logActivity({
+      actor: guard.user.name,
+      verb: "removed subtask",
+      target: result.title,
+      taskId: result.taskId,
+    });
     revalidatePath(`/task/${result.taskId}`);
     revalidatePath("/dashboard");
     return NextResponse.json({ ok: true, ...result });
